@@ -9,9 +9,9 @@
   <meta name="apple-mobile-web-app-title" content="Gym Companion">
   <meta name="description" content="David's adaptive, equipment-first hypertrophy workout companion.">
   <title>David's Gym Companion</title>
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=6.5">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=6.5">
+  <link rel="manifest" href="manifest.webmanifest?v=6.5">
   <style>
 :root {
   color-scheme: dark;
@@ -866,7 +866,216 @@ body[data-text-size="largest"] .nav-item strong { font-size: .64rem; }
       border-radius: 15px;
     }
     .reset-card .danger-button { margin-top: 12px; }
-  </style>
+  
+
+/* v6.4: flat, text-link navigation for clearer large-text use */
+:root {
+  --nav-height: 66px;
+}
+
+.home-content {
+  gap: 8px;
+  padding-top: 10px;
+}
+
+/* Remove stacked boxes from Home. Keep only simple spacing and separators. */
+.home-card {
+  padding: 10px 2px 16px;
+  border: 0;
+  border-bottom: 1px solid rgba(123, 164, 190, .30);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.home-card:last-of-type { border-bottom: 0; }
+.compact-card h2 { margin-bottom: 5px; }
+.compact-card p { margin-bottom: 0; }
+.section-kicker { margin-bottom: 7px; }
+
+/* Large touch targets that look like hyperlinks, not boxes. */
+#buildWorkoutButton,
+#openHistoryButton,
+#resumeWorkoutCard {
+  min-height: 58px;
+  width: 100%;
+  padding: 12px 2px;
+  border: 0;
+  border-radius: 0;
+  color: #9ed0ff;
+  background: transparent;
+  box-shadow: none;
+  font-size: 1.02rem;
+  font-weight: 900;
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+#buildWorkoutButton:active,
+#openHistoryButton:active,
+#resumeWorkoutCard:active { color: #ffffff; }
+#resumeWorkoutCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#resumeWorkoutCard small {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: .78rem;
+  font-weight: 650;
+  text-decoration: none;
+}
+#resumeWorkoutCard > span:last-child { font-size: 1.7rem; text-decoration: none; }
+
+/* The select remains a visible control because it must open a menu. */
+.equipment-picker { gap: 11px; }
+.equipment-label { margin-bottom: 2px; }
+.large-select {
+  border-width: 1px;
+  border-color: rgba(121, 169, 200, .72);
+  background: rgba(10, 31, 43, .70);
+  box-shadow: none;
+}
+
+/* Text-only bottom navigation: no icons, pills, borders, or overlapping boxes. */
+.bottom-nav {
+  height: calc(var(--nav-height) + env(safe-area-inset-bottom));
+  gap: 0;
+  padding: 3px 5px calc(3px + env(safe-area-inset-bottom));
+  background: rgba(7, 20, 29, .97);
+  border-top: 1px solid rgba(111, 151, 176, .38);
+  box-shadow: none;
+}
+.nav-icon { display: none !important; }
+.nav-item,
+.nav-item.active {
+  min-width: 0;
+  min-height: 56px;
+  padding: 10px 2px 8px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+}
+.nav-item strong {
+  display: inline-block;
+  margin: 0;
+  color: #b7c9d3;
+  font-size: clamp(.68rem, 3.2vw, .82rem);
+  font-weight: 800;
+  line-height: 1.15;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.nav-item.active strong {
+  color: #ffffff;
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 8px;
+}
+.nav-item:active strong { color: #9ed0ff; }
+
+/* Prevent enlarged labels from colliding on narrow phones. */
+@media (max-width: 390px) {
+  .nav-item strong { font-size: .65rem; }
+}
+body[data-text-size="largest"] .nav-item strong { font-size: .64rem; }
+
+
+
+/* v6.5: spacious Home and summary-first workout selection */
+.home-content {
+  gap: 16px;
+  padding: 18px 18px calc(var(--nav-height) + 22px);
+}
+.home-equipment {
+  display: grid;
+  gap: 13px;
+  padding: 4px 1px 16px;
+  border-bottom: 1px solid rgba(123, 164, 190, .28);
+}
+.equipment-label {
+  margin: 0;
+  font-size: 1.22rem;
+}
+.text-link-button,
+#buildWorkoutButton,
+#openHistoryButton,
+#resumeWorkoutCard {
+  min-height: 58px;
+  width: 100%;
+  padding: 12px 2px;
+  border: 0;
+  border-radius: 0;
+  color: #9ed0ff;
+  background: transparent;
+  box-shadow: none;
+  font-size: 1.04rem;
+  font-weight: 900;
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 7px;
+}
+#resumeWorkoutCard {
+  border-bottom: 1px solid rgba(123, 164, 190, .28);
+}
+#resumeWorkoutCard small {
+  color: #c1d0da;
+  text-decoration: none;
+}
+.home-header {
+  min-height: 70px;
+}
+.home-header .brand-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+}
+
+/* The workout plan is a clean list. Tap any line to begin there. */
+.summary-content { gap: 8px; }
+.summary-hero {
+  padding: 8px 2px 16px;
+  border: 0;
+  border-bottom: 1px solid rgba(123, 164, 190, .28);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  text-align: left;
+}
+.summary-hero strong { font-size: 1.32rem; }
+.summary-exercise-list {
+  gap: 0;
+  margin-top: 2px;
+  border-top: 1px solid rgba(123, 164, 190, .28);
+}
+.summary-exercise-item,
+.summary-exercise-item.complete {
+  min-height: 72px;
+  padding: 14px 2px;
+  border: 0;
+  border-bottom: 1px solid rgba(123, 164, 190, .28);
+  border-radius: 0;
+  color: var(--text);
+  background: transparent;
+  box-shadow: none;
+  text-align: left;
+}
+.summary-exercise-item strong,
+.summary-exercise-item span { display: block; }
+.summary-exercise-item strong { font-size: 1.02rem; }
+.summary-exercise-item span {
+  margin-top: 5px;
+  color: #9ed0ff;
+  font-size: .78rem;
+}
+.summary-exercise-item.complete span { color: #9ee8b5; }
+.summary-exercise-item:active { background: rgba(77,157,255,.08); }
+
+</style>
 </head>
 <body data-text-size="extra">
   <main id="app" class="app-shell">
@@ -875,11 +1084,12 @@ body[data-text-size="largest"] .nav-item strong { font-size: .64rem; }
       <header class="screen-header compact-header home-header">
         <h1 id="homeTitle" class="visually-hidden">Home</h1>
         <p id="todayDate" class="date-line home-date"></p>
-        <img class="brand-icon" src="icon-192.png" alt="Gym Companion icon">
+        <img class="brand-icon" src="icon-192.png?v=6.5" alt="Gym Companion icon">
       </header>
 
       <div class="scroll-content home-content">
         <div id="startupError" class="startup-error" hidden></div>
+
         <button id="resumeWorkoutCard" class="resume-card" type="button" hidden>
           <span>
             <strong>Resume workout</strong>
@@ -888,7 +1098,7 @@ body[data-text-size="largest"] .nav-item strong { font-size: .64rem; }
           <span aria-hidden="true">›</span>
         </button>
 
-        <section class="home-card equipment-picker" aria-label="Equipment selection">
+        <section class="home-equipment" aria-label="Equipment selection">
           <label class="select-label equipment-label" for="equipmentSelect">Available equipment</label>
           <select id="equipmentSelect" class="large-select">
             <option value="mixed">Mixed equipment</option>
@@ -899,19 +1109,10 @@ body[data-text-size="largest"] .nav-item strong { font-size: .64rem; }
             <option value="machine">Machines</option>
             <option value="smith">Smith machine</option>
           </select>
-          <button id="buildWorkoutButton" class="primary-button" type="button">Build today's workout</button>
+          <button id="buildWorkoutButton" class="text-link-button" type="button">Build today's workout</button>
         </section>
 
-        <section class="home-card compact-card" aria-label="Today's best body-part match">
-          <div>
-            <p class="section-kicker">TODAY'S BEST MATCH</p>
-            <h2 id="homeRecoveryTitle">Choose your equipment</h2>
-            <p id="homeRecoveryText">The app will show which body-part group has had the most rest.</p>
-          </div>
-        </section>
-
-        <button id="openHistoryButton" class="secondary-button full-button" type="button">Progress &amp; workout history</button>
-        <p class="privacy-note">Your workout history stays on this device unless you erase browser data.</p>
+        <button id="openHistoryButton" class="text-link-button" type="button">Progress &amp; workout history</button>
       </div>
     </section>
 
@@ -1010,8 +1211,8 @@ body[data-text-size="largest"] .nav-item strong { font-size: .64rem; }
       <header class="flow-header">
         <button id="summaryBackButton" class="back-button" type="button" aria-label="Return to workout">‹</button>
         <div>
-          <p class="eyebrow">SESSION REVIEW</p>
-          <h1 id="summaryTitle">Finish workout</h1>
+          <p id="summaryEyebrow" class="eyebrow">WORKOUT PLAN</p>
+          <h1 id="summaryTitle">Today's workout</h1>
         </div>
       </header>
 
@@ -1255,26 +1456,22 @@ body[data-text-size="largest"] .nav-item strong { font-size: .64rem; }
           <button id="resetAppButton" class="danger-button" type="button">Reset app and erase data</button>
         </section>
 
-        <p class="app-version">Gym Companion v6.3</p>
+        <p class="app-version">Gym Companion v6.5</p>
       </form>
     </section>
   </main>
 
   <nav id="bottomNav" class="bottom-nav" aria-label="Main navigation">
     <button class="nav-item active" data-view-target="equipmentView" type="button">
-      <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.7 12 3l9 7.7v9.1a1.2 1.2 0 0 1-1.2 1.2h-5.1v-6.2H9.3V21H4.2A1.2 1.2 0 0 1 3 19.8z"/></svg>
       <strong>Home</strong>
     </button>
     <button class="nav-item" data-view-target="searchView" type="button">
-      <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"/><path d="m16 16 5 5"/></svg>
       <strong>Search</strong>
     </button>
     <button class="nav-item" data-view-target="supplementsView" type="button">
-      <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.1 4.1a4.4 4.4 0 0 1 6.2 0l5.6 5.6a4.4 4.4 0 0 1-6.2 6.2l-5.6-5.6a4.4 4.4 0 0 1 0-6.2Z"/><path d="m10.8 12.9 4.1-4.1"/></svg>
       <strong>Supplements</strong>
     </button>
     <button class="nav-item" data-view-target="settingsView" type="button">
-      <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6 1.7 1.7 0 0 0 10 3V2.8h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/></svg>
       <strong>Settings</strong>
     </button>
   </nav>
@@ -3602,7 +3799,19 @@ window.GYM_DATA = {
     const recommendation = chooseSplit(equipmentIds, allowUnderRecovered);
     const splitId = recommendation.splitId;
     const workout = splitId ? buildWorkout(splitId, equipmentIds, recommendation) : null;
-    pendingPlan = { mode, equipmentIds, recommendation, workout };
+
+    if (workout) {
+      state.currentWorkout = workout;
+      state.settings.lastEquipmentMode = mode;
+      pendingPlan = null;
+      saveState();
+      renderAll();
+      showView("summaryView");
+      showToast("Workout built. Tap any exercise to begin there.");
+      return;
+    }
+
+    pendingPlan = { mode, equipmentIds, recommendation, workout: null };
     renderRecommendation();
     showView("recommendationView");
   }
@@ -3616,30 +3825,12 @@ window.GYM_DATA = {
     if (state.currentWorkout) {
       const split = DATA.splits[state.currentWorkout.splitId];
       const completed = state.currentWorkout.exercises.filter(item => item.completed).length;
-      $("resumeWorkoutText").textContent = `${split?.name || "Saved"} • ${completed} of ${state.currentWorkout.exercises.length} complete`;
+      $("resumeWorkoutText").textContent = state.currentWorkout.startedAt
+        ? `${split?.name || "Saved"} • ${completed} of ${state.currentWorkout.exercises.length} complete`
+        : `${split?.name || "Workout"} plan ready • choose your first exercise`;
       resumeCard.hidden = false;
     } else {
       resumeCard.hidden = true;
-    }
-
-    renderHomeRecoveryPreview($("equipmentSelect").value);
-  }
-
-  function renderHomeRecoveryPreview(mode) {
-    const equipmentIds = equipmentForMode(mode || "mixed");
-    if (!equipmentIds.length) {
-      $("homeRecoveryTitle").textContent = "Choose mixed-equipment options";
-      $("homeRecoveryText").textContent = "Open Settings and select at least one equipment type for Mixed equipment.";
-      return;
-    }
-    const recommendation = chooseSplit(equipmentIds, false);
-    if (recommendation.splitId) {
-      const split = DATA.splits[recommendation.splitId];
-      $("homeRecoveryTitle").textContent = `${split.name} is most rested`;
-      $("homeRecoveryText").textContent = `${recommendation.readiness}% of your selected rest time has passed. Tap Build today's workout to see the exercises.`;
-    } else {
-      $("homeRecoveryTitle").textContent = "More rest may help today";
-      $("homeRecoveryText").textContent = `${recommendation.reason} You can still build a workout and review the least-fatigued option.`;
     }
   }
 
@@ -3871,6 +4062,26 @@ window.GYM_DATA = {
     $("workoutSwipeSurface").scrollTop = 0;
   }
 
+  function startWorkoutAt(index) {
+    const workout = state.currentWorkout;
+    if (!workout?.exercises?.length) return;
+    const safeIndex = Math.min(Math.max(0, Number(index || 0)), workout.exercises.length - 1);
+    if (!workout.startedAt) {
+      const now = new Date();
+      workout.startedAt = now.toISOString();
+      workout.dateKey = localDateKey(now);
+    }
+    workout.activeIndex = safeIndex;
+    saveState();
+    renderAll();
+    showView("workoutView");
+  }
+
+  function handleSummaryBack() {
+    if (state.currentWorkout?.startedAt) showView("workoutView");
+    else showView("equipmentView");
+  }
+
   function showSummary() {
     if (!state.currentWorkout) return;
     renderSummary();
@@ -3882,10 +4093,21 @@ window.GYM_DATA = {
     if (!workout) return;
     const split = DATA.splits[workout.splitId];
     const completed = workout.exercises.filter(item => item.completed).length;
+    const hasStarted = Boolean(workout.startedAt);
+
+    $("summaryEyebrow").textContent = hasStarted ? "WORKOUT SUMMARY" : "WORKOUT PLAN";
+    $("summaryTitle").textContent = hasStarted ? "Workout summary" : "Today's workout";
     $("summarySplit").textContent = split.name.toUpperCase();
-    $("summaryCompleted").textContent = `${completed} of ${workout.exercises.length} complete`;
-    $("summaryEquipment").textContent = equipmentNames(workout.equipment);
+    $("summaryCompleted").textContent = hasStarted
+      ? `${completed} of ${workout.exercises.length} complete`
+      : "Tap the exercise you can do first";
+    $("summaryEquipment").textContent = `${split.muscles.map(id => DATA.muscles[id].name).join(" • ")}
+${equipmentNames(workout.equipment)}`;
+
+    $("finishWorkoutButton").hidden = !hasStarted;
     $("finishWorkoutButton").disabled = completed === 0;
+    $("returnToWorkoutButton").hidden = !hasStarted;
+    $("summaryBackButton").setAttribute("aria-label", hasStarted ? "Return to workout" : "Return home");
 
     const list = $("summaryExerciseList");
     list.innerHTML = "";
@@ -3894,12 +4116,13 @@ window.GYM_DATA = {
       const row = document.createElement("button");
       row.type = "button";
       row.className = `summary-exercise-item ${item.completed ? "complete" : ""}`;
-      row.innerHTML = `<strong>${index + 1}. ${exercise?.name || "Exercise"}</strong><span>${item.completed ? "Completed ✓" : "Not complete"}</span>`;
-      row.addEventListener("click", () => {
-        state.currentWorkout.activeIndex = index;
-        saveState();
-        showView("workoutView");
-      });
+      let status;
+      if (item.completed) status = "Completed ✓";
+      else if (!hasStarted) status = `${equipmentNames([exercise?.equipment])} • Tap to begin here`;
+      else if (index === workout.activeIndex) status = "Current exercise";
+      else status = `${equipmentNames([exercise?.equipment])} • Not complete`;
+      row.innerHTML = `<strong>${index + 1}. ${exercise?.name || "Exercise"}</strong><span>${status}</span>`;
+      row.addEventListener("click", () => startWorkoutAt(index));
       list.appendChild(row);
     });
   }
@@ -4261,7 +4484,7 @@ window.GYM_DATA = {
     const dialog = $("activeWorkoutDialog");
     if (action === "resume") {
       dialog.close();
-      showView("workoutView");
+      showView(state.currentWorkout?.startedAt ? "workoutView" : "summaryView");
       return;
     }
     if (action === "save") {
@@ -4381,9 +4604,10 @@ window.GYM_DATA = {
       button.addEventListener("click", () => closeDialogById(button.dataset.closeDialog));
     });
 
-    $("resumeWorkoutCard").addEventListener("click", () => showView("workoutView"));
+    $("resumeWorkoutCard").addEventListener("click", () => {
+      showView(state.currentWorkout?.startedAt ? "workoutView" : "summaryView");
+    });
     $("buildWorkoutButton").addEventListener("click", () => chooseEquipment($("equipmentSelect").value));
-    $("equipmentSelect").addEventListener("change", () => renderHomeRecoveryPreview($("equipmentSelect").value));
     $("openHistoryButton").addEventListener("click", () => showView("historyView"));
     $("historyHomeButton").addEventListener("click", () => showView("equipmentView"));
 
@@ -4404,7 +4628,7 @@ window.GYM_DATA = {
     $("previousExerciseButton").addEventListener("click", () => moveExercise(-1));
     $("nextExerciseButton").addEventListener("click", () => moveExercise(1));
 
-    $("summaryBackButton").addEventListener("click", () => showView("workoutView"));
+    $("summaryBackButton").addEventListener("click", handleSummaryBack);
     $("returnToWorkoutButton").addEventListener("click", () => showView("workoutView"));
     $("finishWorkoutButton").addEventListener("click", finishWorkout);
 
@@ -4430,7 +4654,14 @@ window.GYM_DATA = {
 
     installSwipe($("recommendationView"), startPendingWorkout, () => showView("equipmentView"));
     installSwipe($("workoutView"), () => moveExercise(1), () => moveExercise(-1));
-    installSwipe($("summaryView"), null, () => showView("workoutView"));
+    installSwipe($("summaryView"),
+      () => {
+        if (state.currentWorkout && !state.currentWorkout.startedAt) {
+          startWorkoutAt(state.currentWorkout.activeIndex || 0);
+        }
+      },
+      handleSummaryBack
+    );
     installSwipe($("equipmentView"), () => showView("searchView"), null);
     installSwipe($("searchView"), () => showView("supplementsView"), () => showView("equipmentView"));
     installSwipe($("supplementsView"), () => showView("settingsView"), () => showView("searchView"));
