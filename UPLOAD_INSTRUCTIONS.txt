@@ -1,14 +1,17 @@
-Gym Companion v6.5 — summary-first, spacious Home
+GYM COMPANION v7.0 — PREMIUM DASHBOARD
 
-Upload these six files to the ROOT of dadmacboy/workoutcomp, replacing files with the same names:
-- index.html
-- manifest.webmanifest
-- apple-touch-icon.png
-- icon-192.png
-- icon-512.png
-- UPLOAD_INSTRUCTIONS.txt (optional)
+Upload these five files to the ROOT of dadmacboy/workoutcomp:
 
-After GitHub Pages updates, open the site in Safari and refresh once. Settings should show Gym Companion v6.5.
-If a Home Screen shortcut still shows an older design, delete the shortcut and add it again from Safari.
+1. index.html
+2. manifest.webmanifest
+3. apple-touch-icon.png
+4. icon-192.png
+5. icon-512.png
 
-New flow: choose equipment -> build workout -> tap any exercise in the workout plan to begin there.
+Replace files with the same names. Do not upload the enclosing folder.
+
+After GitHub Pages updates:
+- Open the site in Safari.
+- Reload once.
+- Settings should show Gym Companion v7.0.
+- If a Home Screen shortcut keeps the old look, remove it and add it again from Safari.

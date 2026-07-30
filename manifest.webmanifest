@@ -1,12 +1,12 @@
 {
   "name": "David's Gym Companion",
   "short_name": "Gym Companion",
-  "description": "Adaptive equipment-first hypertrophy workout companion.",
+  "description": "Premium adaptive equipment-first hypertrophy workout companion.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#07141d",
-  "theme_color": "#0b1b27",
+  "background_color": "#06121b",
+  "theme_color": "#0a1a26",
   "icons": [
     {
       "src": "icon-192.png",

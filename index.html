@@ -9,9 +9,9 @@
   <meta name="apple-mobile-web-app-title" content="Gym Companion">
   <meta name="description" content="David's adaptive, equipment-first hypertrophy workout companion.">
   <title>David's Gym Companion</title>
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=6.5">
-  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=6.5">
-  <link rel="manifest" href="manifest.webmanifest?v=6.5">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=7.0">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=7.0">
+  <link rel="manifest" href="manifest.webmanifest?v=7.0">
   <style>
 :root {
   color-scheme: dark;
@@ -1075,6 +1075,443 @@ body[data-text-size="largest"] .nav-item strong { font-size: .64rem; }
 .summary-exercise-item.complete span { color: #9ee8b5; }
 .summary-exercise-item:active { background: rgba(77,157,255,.08); }
 
+
+
+/* v7.0 premium dashboard --------------------------------------------------- */
+:root {
+  --nav-height: 78px;
+  --premium-cyan: #54e2d2;
+  --premium-blue: #4a93ff;
+  --premium-violet: #8e7dff;
+  --premium-green: #74e59a;
+}
+
+body {
+  background:
+    radial-gradient(circle at 88% -4%, rgba(84,226,210,.19), transparent 25rem),
+    radial-gradient(circle at 6% 6%, rgba(74,147,255,.22), transparent 28rem),
+    linear-gradient(180deg, #091826 0%, #06121b 58%, #050e16 100%);
+}
+
+.home-header {
+  min-height: 76px;
+  padding: max(13px, env(safe-area-inset-top)) 18px 9px;
+  background: transparent;
+  border-bottom: 0;
+  box-shadow: none;
+}
+.home-date {
+  color: #d8e8f3;
+  font-size: .9rem;
+  font-weight: 800;
+  letter-spacing: .015em;
+}
+.home-header .brand-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 15px;
+  border: 1px solid rgba(121,199,255,.45);
+  box-shadow: 0 0 0 5px rgba(73,148,255,.08), 0 10px 28px rgba(0,89,180,.3);
+}
+
+.premium-home {
+  display: grid;
+  gap: 15px;
+  padding: 8px 16px calc(var(--nav-height) + 24px);
+}
+
+#resumeWorkoutCard.resume-strip {
+  width: 100%;
+  min-height: 66px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 13px;
+  border: 1px solid rgba(101,184,255,.5);
+  border-radius: 18px;
+  color: #fff;
+  background: linear-gradient(135deg, rgba(35,93,144,.92), rgba(18,54,79,.95));
+  box-shadow: 0 12px 28px rgba(0,66,125,.25);
+  text-align: left;
+}
+#resumeWorkoutCard .resume-strip-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  color: #07141d;
+  background: linear-gradient(145deg, #7fe7db, #64a9ff);
+  font-size: .9rem;
+  box-shadow: 0 6px 15px rgba(47,168,220,.28);
+}
+#resumeWorkoutCard .resume-strip-copy strong,
+#resumeWorkoutCard .resume-strip-copy small { display: block; text-decoration: none; }
+#resumeWorkoutCard .resume-strip-copy strong { font-size: 1rem; text-decoration: none; }
+#resumeWorkoutCard .resume-strip-copy small { margin-top: 3px; color: #d5e8f5; font-size: .72rem; text-decoration: none; }
+#resumeWorkoutCard .resume-strip-arrow { color: #a7d5ff; font-size: 1.8rem; }
+
+.dashboard-hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 320px;
+  padding: 20px 18px 15px;
+  border: 1px solid rgba(102,176,225,.48);
+  border-radius: 30px;
+  background:
+    linear-gradient(145deg, rgba(24,62,84,.97), rgba(9,29,42,.99));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.07),
+    0 22px 56px rgba(0,5,12,.38),
+    0 0 36px rgba(70,152,255,.08);
+  isolation: isolate;
+}
+.dashboard-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(1px);
+  opacity: .55;
+  z-index: -1;
+}
+.dashboard-orb-one {
+  width: 210px;
+  height: 210px;
+  right: -78px;
+  top: -92px;
+  background: radial-gradient(circle, rgba(84,226,210,.6), rgba(84,226,210,0) 68%);
+}
+.dashboard-orb-two {
+  width: 180px;
+  height: 180px;
+  left: -90px;
+  bottom: -80px;
+  background: radial-gradient(circle, rgba(99,117,255,.48), rgba(99,117,255,0) 70%);
+}
+.dashboard-kicker {
+  margin: 0 0 14px;
+  color: #a5d7ff;
+  font-size: .66rem;
+  font-weight: 950;
+  letter-spacing: .17em;
+}
+.dashboard-main {
+  display: grid;
+  grid-template-columns: 138px minmax(0,1fr);
+  gap: 18px;
+  align-items: center;
+}
+.readiness-ring {
+  --ready-angle: 360deg;
+  width: 138px;
+  height: 138px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background:
+    conic-gradient(from -90deg,
+      var(--premium-cyan) 0deg,
+      var(--premium-blue) var(--ready-angle),
+      rgba(90,116,134,.2) var(--ready-angle),
+      rgba(90,116,134,.2) 360deg);
+  box-shadow: 0 0 28px rgba(84,226,210,.17), 0 13px 35px rgba(0,0,0,.28);
+  transition: background .35s ease, transform .35s ease;
+}
+.readiness-ring::before {
+  content: "";
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 36% 26%, #173d50, #0a1c29 72%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+}
+.readiness-core {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+.readiness-core strong { font-size: 1.9rem; line-height: 1; }
+.readiness-core span {
+  margin-top: 7px;
+  color: #a9d9e8;
+  font-size: .62rem;
+  font-weight: 950;
+  letter-spacing: .12em;
+}
+.dashboard-copy { min-width: 0; }
+.dashboard-copy h2 {
+  margin: 0 0 7px;
+  font-size: clamp(2.35rem, 10vw, 3.45rem);
+  line-height: .95;
+  background: linear-gradient(135deg, #ffffff 20%, #86d9ff 80%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.dashboard-copy > p:first-of-type {
+  margin: 0 0 9px;
+  color: #e4f2fa;
+  font-size: .88rem;
+  font-weight: 820;
+}
+#homeMatchReason {
+  margin: 0;
+  color: #adc3d0;
+  font-size: .72rem;
+  line-height: 1.42;
+}
+.readiness-mini-row {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 7px;
+  margin-top: 20px;
+  padding-top: 13px;
+  border-top: 1px solid rgba(150,202,230,.18);
+}
+.readiness-mini-row div {
+  min-width: 0;
+  padding: 8px 4px;
+  text-align: center;
+}
+.readiness-mini-row span,
+.readiness-mini-row strong { display: block; }
+.readiness-mini-row span { color: #9eb5c2; font-size: .65rem; }
+.readiness-mini-row strong { margin-top: 2px; font-size: .93rem; }
+.dashboard-note {
+  margin: 4px 0 0;
+  color: #829aa9;
+  font-size: .61rem;
+  text-align: center;
+}
+
+.equipment-launcher {
+  display: grid;
+  gap: 11px;
+  padding: 4px 2px 1px;
+}
+.equipment-heading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #eaf7fd;
+  font-size: 1rem;
+  font-weight: 880;
+}
+.equipment-heading-icon {
+  width: 27px;
+  height: 27px;
+  fill: none;
+  stroke: var(--premium-cyan);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.select-shell { position: relative; }
+.premium-select {
+  width: 100%;
+  min-height: 64px;
+  padding: 12px 52px 12px 16px;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid rgba(100,165,205,.55);
+  border-radius: 18px;
+  color: #fff;
+  background: linear-gradient(145deg, rgba(17,47,64,.94), rgba(10,31,44,.96));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.055), 0 10px 22px rgba(0,7,14,.18);
+  font-size: 1rem;
+  font-weight: 850;
+}
+.select-chevron {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-55%);
+  color: #84cfff;
+  font-size: 1.25rem;
+  pointer-events: none;
+}
+#buildWorkoutButton.premium-build-button {
+  width: 100%;
+  min-height: 66px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 18px;
+  border: 0;
+  border-radius: 19px;
+  color: #fff;
+  background: linear-gradient(120deg, #3f8dff 0%, #377ee9 45%, #645cff 100%);
+  box-shadow: 0 14px 30px rgba(50,101,237,.31), inset 0 1px 0 rgba(255,255,255,.2);
+  font-size: 1.02rem;
+  font-weight: 950;
+  letter-spacing: -.01em;
+  transition: transform .16s ease, box-shadow .16s ease;
+}
+#buildWorkoutButton.premium-build-button > span:last-child { font-size: 1.55rem; }
+#buildWorkoutButton.premium-build-button:active { transform: translateY(1px) scale(.995); box-shadow: 0 8px 20px rgba(50,101,237,.24); }
+#openHistoryButton.progress-link {
+  width: 100%;
+  min-height: 52px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 4px;
+  border: 0;
+  color: #a9cbe2;
+  background: transparent;
+  font-size: .78rem;
+  font-weight: 800;
+}
+#openHistoryButton.progress-link span:last-child { color: #6fbdff; font-size: 1.3rem; }
+
+/* Premium bottom navigation */
+.bottom-nav.premium-nav {
+  height: calc(var(--nav-height) + env(safe-area-inset-bottom));
+  gap: 6px;
+  padding: 7px 8px calc(7px + env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(96,143,171,.34);
+  background: rgba(6,17,26,.92);
+  box-shadow: 0 -12px 34px rgba(0,5,10,.32);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+.premium-nav .nav-item,
+.premium-nav .nav-item.active {
+  min-height: 62px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 4px;
+  padding: 5px 2px;
+  border: 1px solid transparent;
+  border-radius: 17px;
+  background: transparent;
+  box-shadow: none;
+}
+.premium-nav .nav-icon {
+  width: 25px;
+  height: 25px;
+  display: block !important;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.premium-nav .nav-item strong {
+  display: block;
+  margin: 0;
+  color: inherit;
+  font-size: .59rem;
+  font-weight: 820;
+  text-decoration: none;
+}
+.premium-nav .nav-item { color: #8fa6b5; }
+.premium-nav .nav-item.active {
+  color: #fff;
+  border-color: rgba(103,185,231,.25);
+  background: linear-gradient(145deg, rgba(64,132,183,.42), rgba(26,70,100,.47));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 7px 20px rgba(0,8,14,.2);
+}
+.premium-nav .nav-item.active::after {
+  content: "";
+  width: 22px;
+  height: 3px;
+  margin-top: 1px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--premium-cyan), var(--premium-blue));
+  box-shadow: 0 0 12px rgba(84,226,210,.45);
+}
+
+/* Premium summary-first plan */
+.summary-content { gap: 10px; padding: 14px 15px 20px; }
+.summary-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 18px;
+  border: 1px solid rgba(101,181,227,.43);
+  border-radius: 25px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(84,226,210,.22), transparent 13rem),
+    linear-gradient(145deg, rgba(24,61,82,.98), rgba(11,31,44,.99));
+  box-shadow: 0 15px 36px rgba(0,5,12,.28);
+}
+.summary-hero .status-pill {
+  color: #051820;
+  background: linear-gradient(135deg, #7ee8d9, #7cb8ff);
+}
+.summary-hero strong { display: block; margin-top: 12px; font-size: 1.35rem; }
+.summary-hero p { margin: 7px 0 0; color: #bcd0dc; font-size: .76rem; white-space: pre-line; }
+.summary-exercise-list {
+  display: grid;
+  gap: 0;
+  margin-top: 2px;
+  border-top: 0;
+}
+.summary-exercise-item,
+.summary-exercise-item.complete {
+  min-height: 86px;
+  display: grid;
+  grid-template-columns: 48px minmax(0,1fr) 22px;
+  gap: 11px;
+  align-items: center;
+  padding: 11px 2px;
+  border: 0;
+  border-bottom: 1px solid rgba(116,159,184,.24);
+  border-radius: 0;
+  color: var(--text);
+  background: transparent;
+  text-align: left;
+}
+.summary-exercise-item.recommended {
+  background: linear-gradient(90deg, rgba(74,147,255,.10), transparent 80%);
+}
+.summary-number {
+  width: 43px;
+  height: 43px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  color: #07141d;
+  background: linear-gradient(145deg, #7ee7d8, #65a9ff);
+  font-size: 1rem;
+  font-weight: 950;
+  box-shadow: 0 7px 17px rgba(34,139,205,.2);
+}
+.summary-exercise-item.complete .summary-number {
+  background: linear-gradient(145deg, #8be7a2, #5fcf83);
+}
+.summary-row-copy { min-width: 0; }
+.summary-row-copy strong,
+.summary-row-copy small,
+.summary-row-copy em { display: block; }
+.summary-row-copy strong { font-size: 1rem; line-height: 1.16; }
+.summary-row-copy small { margin-top: 4px; color: #9fc6df; font-size: .68rem; }
+.summary-row-copy em { margin-top: 4px; color: #7ee7d8; font-size: .64rem; font-style: normal; font-weight: 850; }
+.summary-chevron { color: #6fbfff; font-size: 1.55rem; }
+
+@media (max-width: 390px) {
+  .premium-home { padding-left: 12px; padding-right: 12px; }
+  .dashboard-hero { padding-left: 14px; padding-right: 14px; }
+  .dashboard-main { grid-template-columns: 122px minmax(0,1fr); gap: 12px; }
+  .readiness-ring { width: 122px; height: 122px; }
+  .readiness-ring::before { width: 98px; height: 98px; }
+  .readiness-core strong { font-size: 1.65rem; }
+  .dashboard-copy h2 { font-size: 2.25rem; }
+  .premium-nav .nav-item strong { font-size: .54rem; }
+}
+
+body[data-text-size="largest"] .dashboard-main {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  text-align: center;
+}
+body[data-text-size="largest"] .dashboard-copy h2 { margin-top: 2px; }
+body[data-text-size="largest"] #homeMatchReason { max-width: 32rem; }
+
 </style>
 </head>
 <body data-text-size="extra">
@@ -1084,35 +1521,75 @@ body[data-text-size="largest"] .nav-item strong { font-size: .64rem; }
       <header class="screen-header compact-header home-header">
         <h1 id="homeTitle" class="visually-hidden">Home</h1>
         <p id="todayDate" class="date-line home-date"></p>
-        <img class="brand-icon" src="icon-192.png?v=6.5" alt="Gym Companion icon">
+        <img class="brand-icon" src="icon-192.png?v=7.0" alt="Gym Companion icon">
       </header>
 
-      <div class="scroll-content home-content">
+      <div class="scroll-content home-content premium-home">
         <div id="startupError" class="startup-error" hidden></div>
 
-        <button id="resumeWorkoutCard" class="resume-card" type="button" hidden>
-          <span>
+        <button id="resumeWorkoutCard" class="resume-strip" type="button" hidden>
+          <span class="resume-strip-icon" aria-hidden="true">▶</span>
+          <span class="resume-strip-copy">
             <strong>Resume workout</strong>
             <small id="resumeWorkoutText">Your entries are safely stored.</small>
           </span>
-          <span aria-hidden="true">›</span>
+          <span class="resume-strip-arrow" aria-hidden="true">›</span>
         </button>
 
-        <section class="home-equipment" aria-label="Equipment selection">
-          <label class="select-label equipment-label" for="equipmentSelect">Available equipment</label>
-          <select id="equipmentSelect" class="large-select">
-            <option value="mixed">Mixed equipment</option>
-            <option value="bodyweight">Bodyweight / pull-up bar</option>
-            <option value="trx">TRX</option>
-            <option value="cable">Cable / rope</option>
-            <option value="dumbbell">Dumbbells</option>
-            <option value="machine">Machines</option>
-            <option value="smith">Smith machine</option>
-          </select>
-          <button id="buildWorkoutButton" class="text-link-button" type="button">Build today's workout</button>
+        <section class="dashboard-hero" aria-labelledby="homeMatchTitle">
+          <div class="dashboard-orb dashboard-orb-one"></div>
+          <div class="dashboard-orb dashboard-orb-two"></div>
+          <p class="dashboard-kicker">TODAY'S BEST MATCH</p>
+          <div class="dashboard-main">
+            <div id="homeReadinessRing" class="readiness-ring" style="--ready-angle: 360deg;">
+              <div class="readiness-core">
+                <strong id="homeReadinessPercent">100%</strong>
+                <span id="homeReadinessStatus">READY</span>
+              </div>
+            </div>
+            <div class="dashboard-copy">
+              <h2 id="homeMatchTitle">PULL</h2>
+              <p id="homeMatchMuscles">Back • Rear delts • Biceps</p>
+              <p id="homeMatchReason">Best match for your selected equipment and saved recovery settings.</p>
+            </div>
+          </div>
+          <div class="readiness-mini-row" aria-label="Recovery estimates">
+            <div><span>Push</span><strong id="homePushReady">100%</strong></div>
+            <div><span>Pull</span><strong id="homePullReady">100%</strong></div>
+            <div><span>Legs</span><strong id="homeLegsReady">100%</strong></div>
+          </div>
+          <p class="dashboard-note">Estimated from your saved workouts and rest settings.</p>
         </section>
 
-        <button id="openHistoryButton" class="text-link-button" type="button">Progress &amp; workout history</button>
+        <section class="equipment-launcher" aria-label="Equipment selection">
+          <div class="equipment-heading">
+            <svg class="equipment-heading-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"/>
+            </svg>
+            <label for="equipmentSelect">Available equipment</label>
+          </div>
+          <div class="select-shell">
+            <select id="equipmentSelect" class="premium-select">
+              <option value="mixed">Mixed equipment</option>
+              <option value="bodyweight">Bodyweight / pull-up bar</option>
+              <option value="trx">TRX</option>
+              <option value="cable">Cable / rope</option>
+              <option value="dumbbell">Dumbbells</option>
+              <option value="machine">Machines</option>
+              <option value="smith">Smith machine</option>
+            </select>
+            <span class="select-chevron" aria-hidden="true">⌄</span>
+          </div>
+          <button id="buildWorkoutButton" class="premium-build-button" type="button">
+            <span>Build today's workout</span>
+            <span aria-hidden="true">→</span>
+          </button>
+        </section>
+
+        <button id="openHistoryButton" class="progress-link" type="button">
+          <span>View progress &amp; workout history</span>
+          <span aria-hidden="true">›</span>
+        </button>
       </div>
     </section>
 
@@ -1456,22 +1933,26 @@ body[data-text-size="largest"] .nav-item strong { font-size: .64rem; }
           <button id="resetAppButton" class="danger-button" type="button">Reset app and erase data</button>
         </section>
 
-        <p class="app-version">Gym Companion v6.5</p>
+        <p class="app-version">Gym Companion v7.0</p>
       </form>
     </section>
   </main>
 
-  <nav id="bottomNav" class="bottom-nav" aria-label="Main navigation">
+  <nav id="bottomNav" class="bottom-nav premium-nav" aria-label="Main navigation">
     <button class="nav-item active" data-view-target="equipmentView" type="button">
+      <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V21h13V9.5"/><path d="M9.5 21v-6h5v6"/></svg>
       <strong>Home</strong>
     </button>
     <button class="nav-item" data-view-target="searchView" type="button">
+      <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
       <strong>Search</strong>
     </button>
     <button class="nav-item" data-view-target="supplementsView" type="button">
+      <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6v4l2.5 3.5V21h-11V10.5L9 7z"/><path d="M7 13h10"/><path d="M10 17h4"/></svg>
       <strong>Supplements</strong>
     </button>
     <button class="nav-item" data-view-target="settingsView" type="button">
+      <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.06.06-2.78 2.78-.06-.06A1.8 1.8 0 0 0 15 19.4a1.8 1.8 0 0 0-1 .6 1.8 1.8 0 0 0-.4 1.1V21H9.7v-.09A1.8 1.8 0 0 0 9 19.4a1.8 1.8 0 0 0-1.98.36l-.06.06-2.78-2.78.06-.06A1.8 1.8 0 0 0 4.6 15a1.8 1.8 0 0 0-.6-1 1.8 1.8 0 0 0-1.1-.4H3V9.7h.09A1.8 1.8 0 0 0 4.6 9a1.8 1.8 0 0 0-.36-1.98l-.06-.06 2.78-2.78.06.06A1.8 1.8 0 0 0 9 4.6a1.8 1.8 0 0 0 1-.6 1.8 1.8 0 0 0 .4-1.1V3h3.9v.09A1.8 1.8 0 0 0 15 4.6a1.8 1.8 0 0 0 1.98-.36l.06-.06 2.78 2.78-.06.06A1.8 1.8 0 0 0 19.4 9c.3.3.65.5 1 .6.35.1.72.1 1.1.1h.1v3.9h-.09a1.8 1.8 0 0 0-1.11.4 1.8 1.8 0 0 0-1 1z"/></svg>
       <strong>Settings</strong>
     </button>
   </nav>
@@ -1540,7 +2021,7 @@ body[data-text-size="largest"] .nav-item strong { font-size: .64rem; }
 
 
 <script>
-  window.GYM_APP_VERSION = "6.2";
+  window.GYM_APP_VERSION = "7.0";
   window.addEventListener("error", function (event) {
     const box = document.getElementById("startupError");
     if (!box) return;
@@ -3816,10 +4297,35 @@ window.GYM_DATA = {
     showView("recommendationView");
   }
 
+  function renderHomeMatch(mode) {
+    const equipmentIds = equipmentForMode(mode || "mixed");
+    const recommendation = equipmentIds.length ? chooseSplit(equipmentIds, false) : null;
+    const splitId = recommendation?.splitId || recommendation?.fallbackSplitId || "pull";
+    const split = DATA.splits[splitId];
+    const percent = Math.max(0, Math.min(100, Math.round(recommendation?.readiness ?? 100)));
+    const ready = Boolean(recommendation?.splitId);
+
+    $("homeReadinessPercent").textContent = `${percent}%`;
+    $("homeReadinessStatus").textContent = ready ? "READY" : "REST";
+    $("homeReadinessRing").style.setProperty("--ready-angle", `${percent * 3.6}deg`);
+    $("homeMatchTitle").textContent = ready ? split.name.toUpperCase() : "RECOVERY";
+    $("homeMatchMuscles").textContent = ready
+      ? split.muscles.map(id => DATA.muscles[id].name).join(" • ")
+      : "Your best compatible combination is still recovering";
+    $("homeMatchReason").textContent = ready
+      ? `${split.name} is the strongest match for ${equipmentNames(equipmentIds)} today.`
+      : `Rest is recommended. You may still build the least-fatigued option if needed.`;
+
+    $("homePushReady").textContent = `${splitReadiness("push").percent}%`;
+    $("homePullReady").textContent = `${splitReadiness("pull").percent}%`;
+    $("homeLegsReady").textContent = `${splitReadiness("legs").percent}%`;
+  }
+
   function renderEquipment() {
     $("todayDate").textContent = formatToday();
     const selectedMode = state.settings.lastEquipmentMode || "mixed";
     $("equipmentSelect").value = selectedMode;
+    renderHomeMatch(selectedMode);
 
     const resumeCard = $("resumeWorkoutCard");
     if (state.currentWorkout) {
@@ -4115,13 +4621,24 @@ ${equipmentNames(workout.equipment)}`;
       const exercise = exerciseById[item.exerciseId];
       const row = document.createElement("button");
       row.type = "button";
-      row.className = `summary-exercise-item ${item.completed ? "complete" : ""}`;
+      const recommended = !hasStarted && index === (workout.activeIndex || 0);
+      row.className = `summary-exercise-item ${item.completed ? "complete" : ""} ${recommended ? "recommended" : ""}`;
       let status;
-      if (item.completed) status = "Completed ✓";
-      else if (!hasStarted) status = `${equipmentNames([exercise?.equipment])} • Tap to begin here`;
+      if (item.completed) status = "Completed";
+      else if (!hasStarted && recommended) status = "Suggested start — or tap any exercise";
+      else if (!hasStarted) status = "Tap to begin here";
       else if (index === workout.activeIndex) status = "Current exercise";
-      else status = `${equipmentNames([exercise?.equipment])} • Not complete`;
-      row.innerHTML = `<strong>${index + 1}. ${exercise?.name || "Exercise"}</strong><span>${status}</span>`;
+      else status = "Not complete";
+      const muscleName = exercise?.primary ? DATA.muscles[exercise.primary]?.name : "Target";
+      const detail = `${muscleName || "Target"} • ${exercise?.emphasis || "balanced emphasis"} • ${equipmentNames([exercise?.equipment])}`;
+      row.innerHTML = `
+        <span class="summary-number">${item.completed ? "✓" : index + 1}</span>
+        <span class="summary-row-copy">
+          <strong>${exercise?.name || "Exercise"}</strong>
+          <small>${detail}</small>
+          <em>${status}</em>
+        </span>
+        <span class="summary-chevron" aria-hidden="true">›</span>`;
       row.addEventListener("click", () => startWorkoutAt(index));
       list.appendChild(row);
     });
@@ -4607,6 +5124,7 @@ ${equipmentNames(workout.equipment)}`;
     $("resumeWorkoutCard").addEventListener("click", () => {
       showView(state.currentWorkout?.startedAt ? "workoutView" : "summaryView");
     });
+    $("equipmentSelect").addEventListener("change", event => renderHomeMatch(event.target.value));
     $("buildWorkoutButton").addEventListener("click", () => chooseEquipment($("equipmentSelect").value));
     $("openHistoryButton").addEventListener("click", () => showView("historyView"));
     $("historyHomeButton").addEventListener("click", () => showView("equipmentView"));
