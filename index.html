@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#090d12">
+  <meta name="description" content="An adaptive hypertrophy workout companion that balances recovery, body-part combinations, exercise rotation, and progressive overload.">
+  <title>David's Gym Companion</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">DAVID'S GYM COMPANION</p>
+        <h1 id="pageTitle">Today's Plan</h1>
+      </div>
+      <button id="quickSettingsButton" class="icon-button" type="button" aria-label="Open settings">⚙︎</button>
+    </header>
+
+    <section id="todayView" class="view active" aria-labelledby="pageTitle">
+      <article class="hero-card">
+        <div class="hero-topline">
+          <span id="recommendationBadge" class="status-pill">BUILDING PLAN</span>
+          <span id="todayDate" class="muted"></span>
+        </div>
+        <p class="hero-label">TODAY'S RECOMMENDATION</p>
+        <h2 id="recommendedSplit">Checking recovery…</h2>
+        <p id="recommendationReason" class="hero-copy">Your app is reviewing recovery, recent training, and exercise rotation.</p>
+
+        <div class="metric-grid">
+          <div class="metric">
+            <span class="metric-label">Readiness</span>
+            <strong id="readinessScore">—</strong>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Time</span>
+            <strong id="estimatedTime">—</strong>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Exercises</span>
+            <strong id="exerciseTotal">—</strong>
+          </div>
+        </div>
+
+        <button id="buildWorkoutButton" class="primary-button" type="button">Build today's workout</button>
+      </article>
+
+      <section class="section-block">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">RECOVERY</p>
+            <h2>What is ready?</h2>
+          </div>
+          <span class="small-note">Tap a body part for details</span>
+        </div>
+        <div id="recoveryGrid" class="recovery-grid"></div>
+      </section>
+
+      <section class="section-block">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">WHY THIS WORKS</p>
+            <h2>One focused combination</h2>
+          </div>
+        </div>
+        <div class="principle-card">
+          <p id="splitExplanation">The app will choose one compatible muscle combination instead of asking you to train everything in one session.</p>
+        </div>
+      </section>
+    </section>
+
+    <section id="workoutView" class="view" aria-labelledby="workoutTitle">
+      <div id="emptyWorkout" class="empty-state">
+        <h2>No workout built yet</h2>
+        <p>Go to Today and build a workout based on your current recovery.</p>
+        <button id="goTodayButton" class="secondary-button" type="button">Go to Today</button>
+      </div>
+
+      <div id="activeWorkout" hidden>
+        <section class="workout-overview">
+          <div>
+            <p class="section-kicker">CURRENT SESSION</p>
+            <h2 id="workoutTitle">Workout</h2>
+            <p id="workoutSubtitle" class="muted"></p>
+          </div>
+          <div class="progress-ring" aria-label="Workout completion">
+            <strong id="workoutPercent">0%</strong>
+          </div>
+        </section>
+
+        <div class="progress-track" aria-hidden="true">
+          <div id="workoutProgressBar" class="progress-bar"></div>
+        </div>
+
+        <article id="exerciseCard" class="exercise-card">
+          <div class="exercise-heading">
+            <span id="exerciseNumber" class="number-badge">1</span>
+            <div>
+              <p id="exerciseTarget" class="exercise-target">CHEST • UPPER EMPHASIS</p>
+              <h2 id="exerciseName">Exercise</h2>
+            </div>
+          </div>
+
+          <div class="tag-row">
+            <span id="equipmentTag" class="tag"></span>
+            <span id="movementTag" class="tag"></span>
+            <span id="setRepTag" class="tag"></span>
+          </div>
+
+          <section class="coach-box">
+            <p class="coach-label">WHY TODAY</p>
+            <p id="exerciseReason"></p>
+          </section>
+
+          <section class="instruction-block">
+            <p><strong>Form cue:</strong> <span id="exerciseCue"></span></p>
+            <p><strong>Primary:</strong> <span id="primaryMuscle"></span></p>
+            <p><strong>Also works:</strong> <span id="secondaryMuscles"></span></p>
+          </section>
+
+          <a id="videoButton" class="video-button" href="#" target="_blank" rel="noopener noreferrer">▶ Watch a demonstration</a>
+
+          <section class="set-entry" aria-label="Set tracking">
+            <div class="set-header">
+              <span>Set</span>
+              <span>Weight</span>
+              <span>Reps</span>
+            </div>
+            <div id="setRows"></div>
+          </section>
+
+          <label class="field-label" for="exerciseNotes">
+            Notes
+            <textarea id="exerciseNotes" rows="3" placeholder="Machine setting, form, pain, or next-time adjustment"></textarea>
+          </label>
+
+          <div class="exercise-actions">
+            <button id="previousExerciseButton" class="secondary-button" type="button">Previous</button>
+            <button id="completeExerciseButton" class="primary-button" type="button">Complete exercise</button>
+          </div>
+
+          <p class="swipe-hint">You can also swipe left or right between exercises.</p>
+        </article>
+
+        <button id="finishWorkoutButton" class="finish-button" type="button">Finish and save workout</button>
+      </div>
+    </section>
+
+    <section id="progressView" class="view" aria-labelledby="progressTitle">
+      <div class="section-heading page-heading">
+        <div>
+          <p class="section-kicker">MEMORY</p>
+          <h2 id="progressTitle">Progress & history</h2>
+        </div>
+      </div>
+
+      <section class="summary-grid">
+        <article class="summary-card">
+          <span>Workouts</span>
+          <strong id="totalWorkouts">0</strong>
+        </article>
+        <article class="summary-card">
+          <span>Sets this week</span>
+          <strong id="weeklySets">0</strong>
+        </article>
+        <article class="summary-card">
+          <span>Last focus</span>
+          <strong id="lastSplit">—</strong>
+        </article>
+      </section>
+
+      <section class="section-block">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">WEEKLY VOLUME</p>
+            <h2>Direct + assisting sets</h2>
+          </div>
+        </div>
+        <div id="volumeList" class="volume-list"></div>
+      </section>
+
+      <section class="section-block">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">RECENT WORKOUTS</p>
+            <h2>Training history</h2>
+          </div>
+        </div>
+        <div id="historyList" class="history-list"></div>
+      </section>
+    </section>
+
+    <section id="settingsView" class="view" aria-labelledby="settingsTitle">
+      <div class="section-heading page-heading">
+        <div>
+          <p class="section-kicker">PERSONALIZE</p>
+          <h2 id="settingsTitle">Coach settings</h2>
+        </div>
+      </div>
+
+      <form id="settingsForm" class="settings-form">
+        <section class="settings-card">
+          <h3>Workout length</h3>
+          <p class="muted">This controls how many exercises the app selects.</p>
+          <label class="field-label" for="workoutMinutes">
+            Available time
+            <select id="workoutMinutes">
+              <option value="30">30 minutes</option>
+              <option value="45">45 minutes</option>
+              <option value="60">60 minutes</option>
+              <option value="75">75 minutes</option>
+            </select>
+          </label>
+        </section>
+
+        <section class="settings-card">
+          <h3>Equipment available</h3>
+          <p class="muted">The app only recommends equipment you select.</p>
+          <div id="equipmentOptions" class="check-grid"></div>
+        </section>
+
+        <section class="settings-card">
+          <h3>Recovery hours</h3>
+          <p class="muted">These are adjustable starting points—not a promise that every muscle recovers on a fixed clock.</p>
+          <div id="recoverySettings" class="recovery-settings"></div>
+        </section>
+
+        <section class="settings-card">
+          <h3>Starting guidance</h3>
+          <label class="field-label" for="defaultSets">
+            Sets per exercise
+            <select id="defaultSets">
+              <option value="2">2 sets</option>
+              <option value="3">3 sets</option>
+              <option value="4">4 sets</option>
+            </select>
+          </label>
+          <label class="field-label" for="experienceLevel">
+            Experience level
+            <select id="experienceLevel">
+              <option value="beginner">Beginner / returning</option>
+              <option value="intermediate">Intermediate</option>
+            </select>
+          </label>
+        </section>
+
+        <button class="primary-button" type="submit">Save settings</button>
+        <button id="resetAppButton" class="danger-button" type="button">Erase all app history</button>
+      </form>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <button class="nav-item active" data-view="todayView" type="button"><span>⌂</span>Today</button>
+    <button class="nav-item" data-view="workoutView" type="button"><span>●</span>Workout</button>
+    <button class="nav-item" data-view="progressView" type="button"><span>↗</span>Progress</button>
+    <button class="nav-item" data-view="settingsView" type="button"><span>⚙︎</span>Settings</button>
+  </nav>
+
+  <dialog id="muscleDialog">
+    <form method="dialog">
+      <button class="dialog-close" value="close" aria-label="Close">×</button>
+      <p id="dialogMuscleGroup" class="section-kicker"></p>
+      <h2 id="dialogMuscleName"></h2>
+      <div id="dialogRecoveryBar" class="progress-track"><div class="progress-bar"></div></div>
+      <p id="dialogRecoveryText"></p>
+      <p id="dialogLastExercise" class="muted"></p>
+      <button value="close" class="secondary-button">Close</button>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="exercises.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
