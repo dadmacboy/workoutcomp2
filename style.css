@@ -321,3 +321,92 @@ input:focus, textarea:focus, select:focus { outline: 3px solid rgba(47, 128, 255
   .small-note { display: none; }
   .exercise-actions { grid-template-columns: 1fr; }
 }
+
+.button-helper {
+  margin-top: 10px;
+  color: var(--muted);
+  text-align: center;
+  font-size: .82rem;
+}
+
+#equipmentDialog,
+#muscleDialog {
+  width: min(92vw, 470px);
+  max-height: min(88vh, 760px);
+  overflow-y: auto;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+}
+
+#equipmentDialog::backdrop,
+#muscleDialog::backdrop {
+  background: rgba(0, 0, 0, .76);
+  backdrop-filter: blur(3px);
+}
+
+#equipmentDialog form,
+#muscleDialog form {
+  position: relative;
+  display: grid;
+  gap: 15px;
+}
+
+.equipment-picker {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.equipment-choice {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 4px 10px;
+  min-height: 86px;
+  padding: 13px;
+  border: 2px solid var(--line);
+  border-radius: 17px;
+  background: var(--panel-3);
+  cursor: pointer;
+}
+
+.equipment-choice.selected {
+  border-color: var(--blue);
+  background: #102441;
+  box-shadow: inset 0 0 0 1px rgba(47, 128, 255, .25);
+}
+
+.equipment-choice input {
+  grid-row: 1 / span 2;
+  align-self: start;
+  width: 24px;
+  min-height: 24px;
+  margin: 1px 0 0;
+  accent-color: var(--blue);
+}
+
+.equipment-choice strong {
+  display: block;
+  line-height: 1.15;
+}
+
+.equipment-choice small {
+  color: var(--muted);
+  line-height: 1.25;
+}
+
+.selection-summary {
+  min-height: 48px;
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel-3);
+  color: #dce9f8;
+  font-size: .88rem;
+}
+
+@media (max-width: 430px) {
+  .equipment-picker { grid-template-columns: 1fr; }
+  .equipment-choice { min-height: 76px; }
+}

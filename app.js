@@ -12,6 +12,7 @@
       workoutMinutes: 45,
       defaultSets: 3,
       experienceLevel: "beginner",
+      lastEquipmentMode: "mixed",
       equipment: Object.fromEntries(DATA.equipment.map(item => [item.id, true])),
       recoveryHours: Object.fromEntries(
         Object.entries(DATA.muscles).map(([id, muscle]) => [id, muscle.defaultRecovery])
@@ -24,6 +25,7 @@
   let state = loadState();
   let workoutIndex = 0;
   let currentRecommendation = null;
+  let pendingEquipmentMode = state.settings.lastEquipmentMode || "mixed";
   let toastTimer = null;
 
   function loadState() {
@@ -152,23 +154,57 @@
       .sort((a, b) => new Date(b.completedAt || b.startedAt) - new Date(a.completedAt || a.startedAt))[0]?.splitId || null;
   }
 
-  function chooseSplit() {
-    const lastSplit = lastCompletedSplit();
-    const ranked = splitOrder
-      .map(splitId => ({ splitId, ...splitReadiness(splitId) }))
-      .sort((a, b) => b.percent - a.percent);
+  function equipmentNames(ids) {
+    return ids
+      .map(id => DATA.equipment.find(item => item.id === id)?.name || titleCase(id))
+      .join(", ");
+  }
 
-    const ready = ranked.filter(item => item.minimum >= 0.85);
+  function splitCapacity(splitId, equipmentIds) {
+    const exercises = DATA.exercises.filter(exercise =>
+      exercise.split === splitId && equipmentIds.includes(exercise.equipment)
+    );
+    const coveredMuscles = new Set(exercises.map(exercise => exercise.primary));
+    return {
+      exerciseCount: exercises.length,
+      coveredMuscles: DATA.splits[splitId].muscles.filter(id => coveredMuscles.has(id)).length
+    };
+  }
+
+  function chooseSplit(equipmentIds = enabledEquipment()) {
+    const lastSplit = lastCompletedSplit();
+    const targetCount = numberOfExercises();
+    const ranked = splitOrder
+      .map(splitId => {
+        const readiness = splitReadiness(splitId);
+        const capacity = splitCapacity(splitId, equipmentIds);
+        const muscleCount = DATA.splits[splitId].muscles.length;
+        const coverage = capacity.coveredMuscles / muscleCount;
+        const feasible = capacity.exerciseCount >= Math.min(3, targetCount) && coverage >= 0.5;
+        return {
+          splitId,
+          ...readiness,
+          ...capacity,
+          coverage,
+          feasible,
+          rankScore: readiness.percent + Math.min(capacity.exerciseCount, targetCount) * 2 + coverage * 8
+        };
+      })
+      .sort((a, b) => b.rankScore - a.rankScore);
+
+    const ready = ranked.filter(item => item.minimum >= 0.85 && item.feasible);
     if (!ready.length) {
+      const equipmentLabel = equipmentNames(equipmentIds) || "the selected equipment";
+      const best = ranked.find(item => item.feasible) || ranked[0];
       return {
         splitId: null,
-        readiness: ranked[0]?.percent || 0,
-        reason: "Every training combination still has meaningful recovery time remaining. A rest day, walking, or gentle mobility is the better recommendation."
+        readiness: best?.percent || 0,
+        reason: `No compatible combination is both recovered and practical with ${equipmentLabel} right now. Recovery, walking, or gentle mobility is the better recommendation.`
       };
     }
 
     let selected = ready[0];
-    if (selected.splitId === lastSplit && ready[1] && ready[1].percent >= selected.percent - 8) {
+    if (selected.splitId === lastSplit && ready[1] && ready[1].rankScore >= selected.rankScore - 8) {
       selected = ready[1];
     }
 
@@ -176,13 +212,14 @@
     const readyNames = split.muscles
       .filter(id => muscleRecovery(id).readiness >= 0.95)
       .map(id => DATA.muscles[id].name);
+    const equipmentLabel = equipmentNames(equipmentIds);
 
     return {
       splitId: selected.splitId,
       readiness: selected.percent,
       reason: readyNames.length
-        ? `${readyNames.join(", ")} have the strongest recovery scores, and this combination keeps today's work focused.`
-        : `${split.name} is the most recovered compatible combination available today.`
+        ? `${readyNames.join(", ")} have the strongest recovery scores. The app found ${selected.exerciseCount} compatible ${split.name.toLowerCase()} exercises using ${equipmentLabel}.`
+        : `${split.name} is the most recovered compatible combination available with ${equipmentLabel}.`
     };
   }
 
@@ -202,8 +239,9 @@
     return records[0]?.completedAt || null;
   }
 
-  function enabledEquipment() {
-    return Object.entries(state.settings.equipment)
+  function enabledEquipment(source = state.settings.equipment) {
+    if (Array.isArray(source)) return [...source];
+    return Object.entries(source || {})
       .filter(([, enabled]) => enabled)
       .map(([id]) => id);
   }
@@ -232,35 +270,22 @@
     return 7;
   }
 
-  function buildWorkout(splitId) {
+  function buildWorkout(splitId, sessionEquipment) {
     const split = DATA.splits[splitId];
-    const allowedEquipment = enabledEquipment();
+    const allowedEquipment = enabledEquipment(sessionEquipment);
     const count = numberOfExercises();
     const selected = [];
+    const selectedIds = new Set();
 
-    for (const muscleId of split.slots.slice(0, count)) {
-      let candidates = DATA.exercises.filter(exercise =>
-        exercise.split === splitId &&
-        exercise.primary === muscleId &&
-        allowedEquipment.includes(exercise.equipment)
-      );
-
-      if (!candidates.length) {
-        candidates = DATA.exercises.filter(exercise =>
-          exercise.split === splitId && allowedEquipment.includes(exercise.equipment)
-        );
-      }
-
-      const chosen = [...candidates]
-        .sort((a, b) => exerciseScore(b, selected.map(item => item.exerciseId)) - exerciseScore(a, selected.map(item => item.exerciseId)))[0];
-
-      if (!chosen) continue;
+    function addExercise(chosen) {
+      if (!chosen || selectedIds.has(chosen.id) || selected.length >= count) return;
       const prior = exerciseHistory(chosen.id)[0];
       const lastPrimary = sessionExerciseRecords()
         .filter(record => exerciseById[record.exerciseId]?.primary === chosen.primary)
         .sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt))[0];
       const lastPrimaryExercise = lastPrimary ? exerciseById[lastPrimary.exerciseId] : null;
 
+      selectedIds.add(chosen.id);
       selected.push({
         exerciseId: chosen.id,
         completed: false,
@@ -272,9 +297,36 @@
           reps: ""
         })),
         reason: lastPrimaryExercise
-          ? `${DATA.muscles[chosen.primary].name} is ready. Last time you used ${lastPrimaryExercise.name}; this rotates to ${chosen.emphasis} with ${titleCase(chosen.equipment)} equipment.`
+          ? `${DATA.muscles[chosen.primary].name} is ready. Last time you used ${lastPrimaryExercise.name}; this rotates to ${chosen.emphasis} using ${DATA.equipment.find(item => item.id === chosen.equipment)?.name || titleCase(chosen.equipment)}.`
           : `No prior ${DATA.muscles[chosen.primary].name.toLowerCase()} record exists, so this begins your ${chosen.emphasis} rotation.`
       });
+    }
+
+    for (const muscleId of split.slots) {
+      if (selected.length >= count) break;
+      const candidates = DATA.exercises.filter(exercise =>
+        exercise.split === splitId &&
+        exercise.primary === muscleId &&
+        allowedEquipment.includes(exercise.equipment) &&
+        !selectedIds.has(exercise.id)
+      );
+      const chosen = [...candidates]
+        .sort((a, b) => exerciseScore(b, [...selectedIds]) - exerciseScore(a, [...selectedIds]))[0];
+      addExercise(chosen);
+    }
+
+    if (selected.length < count) {
+      const remaining = DATA.exercises
+        .filter(exercise =>
+          exercise.split === splitId &&
+          allowedEquipment.includes(exercise.equipment) &&
+          !selectedIds.has(exercise.id)
+        )
+        .sort((a, b) => exerciseScore(b, [...selectedIds]) - exerciseScore(a, [...selectedIds]));
+      for (const exercise of remaining) {
+        addExercise(exercise);
+        if (selected.length >= count) break;
+      }
     }
 
     return {
@@ -282,6 +334,7 @@
       splitId,
       startedAt: new Date().toISOString(),
       plannedMinutes: Number(state.settings.workoutMinutes),
+      equipment: allowedEquipment,
       exercises: selected
     };
   }
@@ -302,7 +355,7 @@
       $("readinessScore").textContent = `${currentRecommendation.readiness}%`;
       $("estimatedTime").textContent = `${state.settings.workoutMinutes} min`;
       $("exerciseTotal").textContent = numberOfExercises();
-      $("buildWorkoutButton").textContent = state.currentWorkout ? "Replace current workout" : "Build today's workout";
+      $("buildWorkoutButton").textContent = state.currentWorkout ? "Choose equipment & replace workout" : "Choose equipment & build workout";
       $("buildWorkoutButton").disabled = false;
       $("splitExplanation").textContent = split.explanation;
     } else {
@@ -371,7 +424,8 @@
     const percent = workout.exercises.length ? Math.round(completed / workout.exercises.length * 100) : 0;
 
     $("workoutTitle").textContent = `${split.name} Workout`;
-    $("workoutSubtitle").textContent = `${workout.exercises.length} exercises • about ${workout.plannedMinutes} minutes`;
+    const workoutEquipment = equipmentNames(workout.equipment || enabledEquipment());
+    $("workoutSubtitle").textContent = `${workout.exercises.length} exercises • about ${workout.plannedMinutes} minutes • ${workoutEquipment}`;
     $("workoutPercent").textContent = `${percent}%`;
     $("workoutProgressBar").style.width = `${percent}%`;
 
@@ -382,7 +436,7 @@
     $("exerciseNumber").textContent = workoutIndex + 1;
     $("exerciseTarget").textContent = `${DATA.muscles[exercise.primary].name.toUpperCase()} • ${exercise.emphasis.toUpperCase()}`;
     $("exerciseName").textContent = exercise.name;
-    $("equipmentTag").textContent = titleCase(exercise.equipment);
+    $("equipmentTag").textContent = DATA.equipment.find(item => item.id === exercise.equipment)?.name || titleCase(exercise.equipment);
     $("movementTag").textContent = exercise.movement;
     $("setRepTag").textContent = `${item.sets.length} sets × ${exercise.reps}`;
     $("exerciseReason").textContent = item.reason;
@@ -394,7 +448,13 @@
     $("videoButton").href = `https://www.youtube.com/results?search_query=${encodeURIComponent(exercise.videoQuery)}`;
     $("exerciseNotes").value = item.notes || "";
 
-    renderSetRows(item);
+    $("loadColumnLabel").textContent = exercise.equipment === "trx"
+      ? "Angle / setup"
+      : exercise.equipment === "bodyweight"
+        ? "Variation"
+        : "Weight";
+
+    renderSetRows(item, exercise);
 
     $("previousExerciseButton").disabled = workoutIndex === 0;
     $("completeExerciseButton").textContent = item.completed
@@ -404,7 +464,7 @@
     $("finishWorkoutButton").disabled = completed === 0;
   }
 
-  function renderSetRows(item) {
+  function renderSetRows(item, exercise) {
     const container = $("setRows");
     container.innerHTML = "";
     item.sets.forEach((set, index) => {
@@ -412,7 +472,7 @@
       row.className = "set-row";
       row.innerHTML = `
         <span class="set-label">${index + 1}</span>
-        <input class="weight-input" data-set="${index}" inputmode="decimal" aria-label="Set ${index + 1} weight" placeholder="Weight" value="${escapeAttribute(set.weight)}">
+        <input class="weight-input" data-set="${index}" inputmode="text" aria-label="Set ${index + 1} load or setup" placeholder="${exercise.equipment === "trx" ? "Body angle" : exercise.equipment === "bodyweight" ? "Variation" : "Weight"}" value="${escapeAttribute(set.weight)}">
         <input class="reps-input" data-set="${index}" inputmode="numeric" aria-label="Set ${index + 1} repetitions" placeholder="Reps" value="${escapeAttribute(set.reps)}">
       `;
       container.appendChild(row);
@@ -548,7 +608,7 @@
           <strong>${DATA.splits[session.splitId]?.name || titleCase(session.splitId)}</strong>
           <span>${formatDate(session.completedAt)}</span>
         </div>
-        <p class="history-meta">${session.exercises?.length || 0} exercises • ${session.plannedMinutes || "—"} planned minutes</p>
+        <p class="history-meta">${session.exercises?.length || 0} exercises • ${session.plannedMinutes || "—"} planned minutes • ${equipmentNames(session.equipment || []) || "Equipment not recorded"}</p>
         <p class="history-exercises">${exerciseNames.join(" • ")}</p>
       `;
       historyList.appendChild(item);
@@ -651,18 +711,85 @@
     renderSettings();
   }
 
-  function buildRecommendedWorkout() {
-    if (!currentRecommendation?.splitId) return;
+  function equipmentForMode(mode) {
+    return mode === "mixed" ? enabledEquipment() : [mode];
+  }
+
+  function renderSessionEquipmentOptions() {
+    const container = $("sessionEquipmentOptions");
+    const options = [
+      { id: "mixed", name: "Mixed equipment", note: "Use all usual equipment selected in Settings" },
+      ...DATA.equipment
+    ];
+    container.innerHTML = "";
+
+    options.forEach(option => {
+      const label = document.createElement("label");
+      label.className = `equipment-choice ${pendingEquipmentMode === option.id ? "selected" : ""}`;
+      label.innerHTML = `
+        <input type="radio" name="sessionEquipment" value="${option.id}" ${pendingEquipmentMode === option.id ? "checked" : ""}>
+        <strong>${option.name}</strong>
+        <small>${option.note || "Use only this equipment today"}</small>
+      `;
+      label.querySelector("input").addEventListener("change", event => {
+        pendingEquipmentMode = event.target.value;
+        renderSessionEquipmentOptions();
+      });
+      container.appendChild(label);
+    });
+
+    const selectedEquipment = equipmentForMode(pendingEquipmentMode);
+    const label = pendingEquipmentMode === "mixed"
+      ? `Mixed workout: ${equipmentNames(selectedEquipment)}`
+      : `Today’s workout will use only ${equipmentNames(selectedEquipment)}.`;
+    $("equipmentSelectionSummary").textContent = label;
+  }
+
+  function openEquipmentDialog() {
+    pendingEquipmentMode = state.settings.lastEquipmentMode || "mixed";
+    renderSessionEquipmentOptions();
+    $("equipmentDialog").showModal();
+  }
+
+  function closeEquipmentDialog() {
+    $("equipmentDialog").close();
+  }
+
+  function buildRecommendedWorkout(event) {
+    event?.preventDefault();
+    const selectedEquipment = equipmentForMode(pendingEquipmentMode);
+    if (!selectedEquipment.length) {
+      showToast("Select at least one usual equipment option in Settings.");
+      return;
+    }
+
+    const recommendation = chooseSplit(selectedEquipment);
+    if (!recommendation.splitId) {
+      $("equipmentSelectionSummary").textContent = recommendation.reason;
+      showToast("No recovered workout is available with that equipment yet.");
+      return;
+    }
+
     if (state.currentWorkout) {
       const confirmed = confirm("Replace the current unfinished workout with a new recommendation?");
       if (!confirmed) return;
     }
-    state.currentWorkout = buildWorkout(currentRecommendation.splitId);
+
+    const workout = buildWorkout(recommendation.splitId, selectedEquipment);
+    if (!workout.exercises.length) {
+      showToast("No compatible exercises were found for that equipment.");
+      return;
+    }
+
+    state.settings.lastEquipmentMode = pendingEquipmentMode;
+    state.currentWorkout = workout;
+    currentRecommendation = recommendation;
     workoutIndex = 0;
     saveState();
-    renderWorkout();
+    closeEquipmentDialog();
+    renderAll();
     switchView("workoutView");
-    showToast("Workout built from recovery and rotation history.");
+    showToast(`Built a ${DATA.splits[recommendation.splitId].name} workout using ${equipmentNames(selectedEquipment)}.`);
   }
 
   function moveExercise(direction) {
@@ -681,7 +808,10 @@
 
   $("quickSettingsButton").addEventListener("click", () => switchView("settingsView"));
   $("goTodayButton").addEventListener("click", () => switchView("todayView"));
-  $("buildWorkoutButton").addEventListener("click", buildRecommendedWorkout);
+  $("buildWorkoutButton").addEventListener("click", openEquipmentDialog);
+  $("equipmentForm").addEventListener("submit", buildRecommendedWorkout);
+  $("closeEquipmentDialog").addEventListener("click", closeEquipmentDialog);
+  $("cancelEquipmentButton").addEventListener("click", closeEquipmentDialog);
   $("previousExerciseButton").addEventListener("click", () => moveExercise(-1));
   $("completeExerciseButton").addEventListener("click", completeCurrentExercise);
   $("exerciseNotes").addEventListener("input", saveCurrentNotes);

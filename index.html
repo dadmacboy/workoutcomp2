@@ -43,7 +43,8 @@
           </div>
         </div>
 
-        <button id="buildWorkoutButton" class="primary-button" type="button">Build today's workout</button>
+        <button id="buildWorkoutButton" class="primary-button" type="button">Choose equipment &amp; build workout</button>
+        <p class="button-helper">The app will ask what equipment is available before creating the session.</p>
       </article>
 
       <section class="section-block">
@@ -124,7 +125,7 @@
           <section class="set-entry" aria-label="Set tracking">
             <div class="set-header">
               <span>Set</span>
-              <span>Weight</span>
+              <span id="loadColumnLabel">Weight</span>
               <span>Reps</span>
             </div>
             <div id="setRows"></div>
@@ -215,8 +216,8 @@
         </section>
 
         <section class="settings-card">
-          <h3>Equipment available</h3>
-          <p class="muted">The app only recommends equipment you select.</p>
+          <h3>Usual equipment</h3>
+          <p class="muted">These choices are preselected when the app asks what is available today. You can change them before every workout.</p>
           <div id="equipmentOptions" class="check-grid"></div>
         </section>
 
@@ -257,6 +258,20 @@
     <button class="nav-item" data-view="progressView" type="button"><span>↗</span>Progress</button>
     <button class="nav-item" data-view="settingsView" type="button"><span>⚙︎</span>Settings</button>
   </nav>
+
+
+  <dialog id="equipmentDialog">
+    <form id="equipmentForm">
+      <button id="closeEquipmentDialog" class="dialog-close" type="button" aria-label="Close">×</button>
+      <p class="section-kicker">STEP 1 OF 2</p>
+      <h2>What can you use right now?</h2>
+      <p class="muted">Choose one option. Pick Mixed equipment when you can move around the gym; otherwise select the single station or tool you have available.</p>
+      <div id="sessionEquipmentOptions" class="equipment-picker"></div>
+      <p id="equipmentSelectionSummary" class="selection-summary">Select today’s equipment.</p>
+      <button id="confirmEquipmentButton" class="primary-button" type="submit">Build workout</button>
+      <button id="cancelEquipmentButton" class="secondary-button" type="button">Cancel</button>
+    </form>
+  </dialog>
 
   <dialog id="muscleDialog">
     <form method="dialog">
