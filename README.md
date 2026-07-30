@@ -1,48 +1,58 @@
-# David's Gym Companion — Equipment-First Adaptive Prototype
+# David's Gym Companion — Large-Text Swipe Prototype v4
 
-This prototype replaces fixed Monday/Wednesday/Friday workouts with an adaptive Push, Pull, or Legs + Core recommendation.
+This version is designed for an iPhone 12 Pro Max and prioritizes large text, high contrast, large tap targets, and minimal scrolling during workouts.
 
-## New equipment-first flow
+## Main flow
 
-1. Tap **Choose equipment & build workout**.
-2. Select the equipment you can use right now:
-   - Mixed equipment
-   - Bodyweight / pull-up bar
-   - TRX suspension trainer
-   - Cable / rope
-   - Dumbbells
-   - Machines
-   - Smith machine
-3. The app checks recovery and chooses the most practical compatible body-part combination.
-4. The generated workout uses only the equipment selected for that session.
+1. Choose the equipment available right now.
+2. Review the recommended Push, Pull, or Legs + Core combination.
+3. Swipe left or tap Start.
+4. Record one exercise at a time.
+5. Swipe between exercises.
+6. Review and save the workout.
 
-The last choice is remembered for convenience, but the app asks again before every new workout.
+## Equipment modes
 
-## Main features
+- Mixed equipment
+- Bodyweight
+- TRX
+- Cable / rope
+- Dumbbells
+- Machines
+- Smith machine
 
-- Saves all data locally in the browser with `localStorage`
-- Recommends one compatible muscle combination instead of a full-body session
-- Uses adjustable recovery hours for every major muscle group
-- Counts assisting muscles as partial fatigue and partial weekly volume
-- Rotates muscle emphasis and recent exercise history
-- Includes 95 exercises across Push, Pull, and Legs + Core
-- Supports Machine, Cable/Rope, Dumbbell, Smith Machine, Bodyweight, and TRX workouts
-- Builds 30-, 45-, 60-, or 75-minute sessions
-- Tracks weight, repetitions, notes, completed exercises, recovery, equipment used, and workout history
-- Uses YouTube search links for demonstrations instead of custom pictures
-- Works as a static GitHub Pages site; no server or API key is required
+A single-equipment workout uses only the selected equipment type. Mixed equipment uses the equipment enabled in Settings.
 
-## Install in the existing GitHub Pages repository
+## Memory and date behavior
 
-Replace these files in `dadmacboy/workoutcomp`:
+- Weight, setup, reps, notes, exercise position, and completion status save as they are entered.
+- Closing or refreshing the page does not erase the current workout.
+- On the same day, the app resumes the saved workout.
+- If an unfinished workout crosses into a new calendar day, the app asks whether to continue it, save completed exercises, or discard it.
+- Nothing is deleted automatically because the date changed.
+- Saved data remains in the browser's localStorage. Use Export Backup before clearing browser data or changing devices.
 
-1. `index.html`
-2. `style.css`
-3. `exercises.js`
-4. `app.js`
+## Swipe controls
 
-The old image files can remain in the repository; this version does not load them.
+- Recommendation: left to continue, right to go back.
+- Workout: left for the next exercise, right for the previous exercise or overview.
+- Final exercise: left to open the summary.
+- Summary: right to return to the workout.
+- History and Settings: swipe between them.
 
-## Important prototype limitation
+Swipes are ignored while using inputs, buttons, links, menus, or dialogs.
 
-Recovery time is an adjustable planning rule, not a biological measurement. Soreness, sleep, joint pain, performance, illness, and medical restrictions still require human judgment. Stop an exercise that causes sharp or unusual pain.
+## Install on GitHub Pages
+
+Replace the existing repository files with:
+
+- `index.html`
+- `style.css`
+- `exercises.js`
+- `app.js`
+
+The README is optional and is not required for the app to run.
+
+## Exercise demonstrations
+
+The Video button opens a YouTube search for the selected exercise. This avoids maintaining a large custom image or video library. Review demonstrations critically and stop any movement that causes sharp or worsening pain.
