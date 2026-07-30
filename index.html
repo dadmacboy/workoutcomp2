@@ -838,20 +838,44 @@ body[data-text-size="largest"] .nav-item strong { font-size: .64rem; }
       font-size: .68rem;
       text-align: center;
     }
+    .visually-hidden {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+    }
+    .home-header {
+      min-height: 78px;
+      padding-top: max(12px, env(safe-area-inset-top));
+      padding-bottom: 10px;
+    }
+    .home-date {
+      margin: 0;
+      color: #d9e8f1;
+      font-size: 1rem;
+      font-weight: 750;
+    }
+    .home-header .brand-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 15px;
+    }
+    .reset-card .danger-button { margin-top: 12px; }
   </style>
 </head>
 <body data-text-size="extra">
   <main id="app" class="app-shell">
 
     <section id="equipmentView" class="view active standard-view" aria-labelledby="homeTitle">
-      <header class="screen-header compact-header">
-        <div>
-          <p class="eyebrow">DAVID'S GYM COMPANION</p>
-          <h1 id="homeTitle">Home</h1>
-          <p class="header-subtitle">Train what is ready. Rest what is not.</p>
-          <p id="todayDate" class="date-line"></p>
-        </div>
-        <img class="brand-icon" src="icon-192.png" alt="">
+      <header class="screen-header compact-header home-header">
+        <h1 id="homeTitle" class="visually-hidden">Home</h1>
+        <p id="todayDate" class="date-line home-date"></p>
+        <img class="brand-icon" src="icon-192.png" alt="Gym Companion icon">
       </header>
 
       <div class="scroll-content home-content">
@@ -865,7 +889,6 @@ body[data-text-size="largest"] .nav-item strong { font-size: .64rem; }
         </button>
 
         <section class="home-card equipment-picker" aria-label="Equipment selection">
-          <p class="section-kicker">START HERE</p>
           <label class="select-label equipment-label" for="equipmentSelect">Available equipment</label>
           <select id="equipmentSelect" class="large-select">
             <option value="mixed">Mixed equipment</option>
@@ -879,11 +902,11 @@ body[data-text-size="largest"] .nav-item strong { font-size: .64rem; }
           <button id="buildWorkoutButton" class="primary-button" type="button">Build today's workout</button>
         </section>
 
-        <section class="home-card compact-card">
+        <section class="home-card compact-card" aria-label="Today's best body-part match">
           <div>
-            <p class="section-kicker">RECOVERY CHECK</p>
-            <h2 id="homeRecoveryTitle">Ready to plan</h2>
-            <p id="homeRecoveryText">Choose the equipment that is available. The app will match it to the most recovered body-part combination.</p>
+            <p class="section-kicker">TODAY'S BEST MATCH</p>
+            <h2 id="homeRecoveryTitle">Choose your equipment</h2>
+            <p id="homeRecoveryText">The app will show which body-part group has had the most rest.</p>
           </div>
         </section>
 
@@ -1225,8 +1248,14 @@ body[data-text-size="largest"] .nav-item strong { font-size: .64rem; }
         </section>
 
         <button class="primary-button" type="submit">Save settings</button>
-        <button id="resetAppButton" class="danger-button" type="button">Erase all app data</button>
-        <p class="app-version">Gym Companion v6.2</p>
+
+        <section class="settings-card reset-card">
+          <h2>Reset app</h2>
+          <p>This permanently erases the current workout, history, and settings stored on this device.</p>
+          <button id="resetAppButton" class="danger-button" type="button">Reset app and erase data</button>
+        </section>
+
+        <p class="app-version">Gym Companion v6.3</p>
       </form>
     </section>
   </main>
@@ -3606,11 +3635,11 @@ window.GYM_DATA = {
     const recommendation = chooseSplit(equipmentIds, false);
     if (recommendation.splitId) {
       const split = DATA.splits[recommendation.splitId];
-      $("homeRecoveryTitle").textContent = `${split.name} is currently strongest`;
-      $("homeRecoveryText").textContent = `${recommendation.readiness}% readiness with ${equipmentNames(equipmentIds)}. Tap Build today's workout for the full recommendation.`;
+      $("homeRecoveryTitle").textContent = `${split.name} is most rested`;
+      $("homeRecoveryText").textContent = `${recommendation.readiness}% of your selected rest time has passed. Tap Build today's workout to see the exercises.`;
     } else {
-      $("homeRecoveryTitle").textContent = "Recovery may be the best choice";
-      $("homeRecoveryText").textContent = recommendation.reason;
+      $("homeRecoveryTitle").textContent = "More rest may help today";
+      $("homeRecoveryText").textContent = `${recommendation.reason} You can still build a workout and review the least-fatigued option.`;
     }
   }
 
