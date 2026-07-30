@@ -31,7 +31,10 @@
       equipment: Object.fromEntries(DATA.equipment.map(item => [item.id, true])),
       recoveryHours: Object.fromEntries(
         Object.entries(DATA.muscles).map(([id, muscle]) => [id, muscle.defaultRecovery])
-      )
+      ),
+      bodyWeight: "",
+      weightUnit: "lb",
+      profileSex: "male"
     },
     sessions: [],
     currentWorkout: null
@@ -446,25 +449,8 @@
 
   function renderEquipment() {
     $("todayDate").textContent = formatToday();
-    const grid = $("equipmentGrid");
-    const options = [
-      { id: "mixed", name: "Mixed equipment", note: "Use your usual selections" },
-      ...DATA.equipment.map(item => ({ ...item, note: item.id === "bodyweight" ? "No station needed" : item.note }))
-    ];
-    grid.innerHTML = "";
-    options.forEach(option => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = `equipment-card ${option.id === "mixed" ? "mixed" : ""}`;
-      button.dataset.equipmentMode = option.id;
-      button.innerHTML = `
-        <span class="equipment-icon" aria-hidden="true">${equipmentIcon[option.id] || "●"}</span>
-        <strong>${option.name}</strong>
-        <small>${option.note || "Use only this equipment"}</small>
-      `;
-      button.addEventListener("click", () => chooseEquipment(option.id));
-      grid.appendChild(button);
-    });
+    const selectedMode = state.settings.lastEquipmentMode || "mixed";
+    $("equipmentSelect").value = selectedMode;
 
     const resumeCard = $("resumeWorkoutCard");
     if (state.currentWorkout) {
@@ -475,7 +461,26 @@
     } else {
       resumeCard.hidden = true;
     }
-    $("workoutNavButton").disabled = !state.currentWorkout;
+
+    renderHomeRecoveryPreview($("equipmentSelect").value);
+  }
+
+  function renderHomeRecoveryPreview(mode) {
+    const equipmentIds = equipmentForMode(mode || "mixed");
+    if (!equipmentIds.length) {
+      $("homeRecoveryTitle").textContent = "Choose mixed-equipment options";
+      $("homeRecoveryText").textContent = "Open Settings and select at least one equipment type for Mixed equipment.";
+      return;
+    }
+    const recommendation = chooseSplit(equipmentIds, false);
+    if (recommendation.splitId) {
+      const split = DATA.splits[recommendation.splitId];
+      $("homeRecoveryTitle").textContent = `${split.name} is currently strongest`;
+      $("homeRecoveryText").textContent = `${recommendation.readiness}% readiness with ${equipmentNames(equipmentIds)}. Tap Build today's workout for the full recommendation.`;
+    } else {
+      $("homeRecoveryTitle").textContent = "Recovery may be the best choice";
+      $("homeRecoveryText").textContent = recommendation.reason;
+    }
   }
 
   function chooseEquipment(mode) {
@@ -494,9 +499,8 @@
     if (!pendingPlan) return;
     const { recommendation, workout, equipmentIds } = pendingPlan;
     const split = recommendation.splitId ? DATA.splits[recommendation.splitId] : null;
-    const active = Boolean(pendingPlan.active);
 
-    $("recommendationTitle").textContent = active ? "Workout overview" : "Recommended workout";
+    $("recommendationTitle").textContent = "Recommended workout";
     $("recommendationStatus").className = `status-pill ${split ? "ready" : "rest"}`;
     $("recommendationStatus").textContent = split
       ? recommendation.forced ? "LEAST-FATIGUED OPTION" : "READY TO TRAIN"
@@ -524,17 +528,13 @@
     }
 
     $("startWorkoutButton").hidden = !split;
-    $("startWorkoutButton").textContent = active ? "Resume workout" : "Start workout";
+    $("startWorkoutButton").textContent = "Start workout";
     $("forceWorkoutButton").hidden = Boolean(split) || !recommendation.fallbackSplitId;
-    $("changeEquipmentButton").textContent = active ? "Return to workout" : "Choose different equipment";
+    $("changeEquipmentButton").textContent = "Change equipment";
   }
 
   function startPendingWorkout() {
     if (!pendingPlan) return;
-    if (pendingPlan.active) {
-      showView("workoutView");
-      return;
-    }
     if (!pendingPlan.workout) return;
     const now = new Date();
     pendingPlan.workout.startedAt = now.toISOString();
@@ -549,23 +549,8 @@
     showToast("Workout saved. Your entries will remain after a refresh.");
   }
 
-  function showCurrentOverview() {
-    const workout = state.currentWorkout;
-    if (!workout) return;
-    pendingPlan = {
-      active: true,
-      mode: workout.equipmentMode,
-      equipmentIds: workout.equipment,
-      recommendation: {
-        splitId: workout.splitId,
-        readiness: workout.readiness || splitReadiness(workout.splitId).percent,
-        forced: workout.forced,
-        reason: workout.recommendationReason || DATA.splits[workout.splitId].explanation
-      },
-      workout
-    };
-    renderRecommendation();
-    showView("recommendationView");
+  function goHomeFromWorkout() {
+    showView("equipmentView");
   }
 
   function currentWorkoutItem() {
@@ -579,7 +564,6 @@
   function renderWorkout() {
     const current = currentWorkoutItem();
     if (!current) {
-      $("workoutNavButton").disabled = true;
       return;
     }
     const { workout, index, item, exercise } = current;
@@ -614,7 +598,6 @@
       : index === workout.exercises.length - 1 ? "Complete & review" : "Complete & next";
     $("previousExerciseButton").disabled = false;
     $("nextExerciseButton").textContent = index === workout.exercises.length - 1 ? "Summary ›" : "Next ›";
-    $("workoutNavButton").disabled = false;
   }
 
   function lastPerformanceText(exerciseId) {
@@ -715,7 +698,7 @@
     if (!current) return;
     const next = current.index + direction;
     if (next < 0) {
-      showCurrentOverview();
+      showView("equipmentView");
       return;
     }
     if (next >= current.workout.exercises.length) {
@@ -852,6 +835,9 @@
   }
 
   function renderSettings() {
+    $("bodyWeight").value = state.settings.bodyWeight ?? "";
+    $("weightUnit").value = state.settings.weightUnit || "lb";
+    $("profileSex").value = state.settings.profileSex || "male";
     $("textSize").value = state.settings.textSize || "extra";
     $("workoutMinutes").value = String(state.settings.workoutMinutes);
     $("defaultSets").value = String(state.settings.defaultSets);
@@ -869,7 +855,7 @@
     recoveryContainer.innerHTML = "";
     Object.entries(DATA.muscles).forEach(([muscleId, muscle]) => {
       const row = document.createElement("div");
-      row.className = "recovery-setting";
+      row.className = "recovery-setting-row";
       row.innerHTML = `
         <label for="recovery-${muscleId}">${muscle.name}</label>
         <input id="recovery-${muscleId}" data-recovery-setting="${muscleId}" type="number" inputmode="numeric" min="12" max="168" step="6" value="${state.settings.recoveryHours[muscleId]}">
@@ -894,8 +880,12 @@
       recoveryHours[input.dataset.recoverySetting] = Math.min(168, Math.max(12, Number(input.value) || 48));
     });
 
+    const weight = $("bodyWeight").value.trim();
     state.settings = {
       ...state.settings,
+      bodyWeight: weight ? Math.max(1, Number(weight)) : "",
+      weightUnit: $("weightUnit").value,
+      profileSex: $("profileSex").value,
       textSize: $("textSize").value,
       workoutMinutes: Number($("workoutMinutes").value),
       defaultSets: Number($("defaultSets").value),
@@ -917,7 +907,7 @@
     const payload = {
       app: "David's Gym Companion",
       exportedAt: new Date().toISOString(),
-      version: 4,
+      version: 6,
       state
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
@@ -953,6 +943,94 @@
       console.error(error);
       showToast("That backup file could not be imported.");
     }
+  }
+
+
+  function renderSupplements() {
+    const value = Number(state.settings.bodyWeight);
+    const unit = state.settings.weightUnit || "lb";
+    const sex = state.settings.profileSex || "male";
+    const dailyTotal = sex === "female" ? "310–320 mg" : "400–420 mg";
+    $("magnesiumTarget").textContent = "1–2 g/day*";
+    $("magnesiumNote").textContent = `*Recent trials used 1–2 g/day of the L-threonate compound. Your daily total magnesium target is ${dailyTotal}. Keep supplemental elemental magnesium at or below 350 mg/day unless a clinician directs otherwise.`;
+
+    if (!Number.isFinite(value) || value <= 0) {
+      $("supplementWeight").textContent = "Not entered";
+      $("proteinTarget").textContent = "—";
+      $("proteinRange").textContent = "Enter your weight in Settings to calculate a daily muscle-building target.";
+      return;
+    }
+
+    const kilograms = unit === "kg" ? value : value / 2.2046226218;
+    const target = Math.round(kilograms * 1.6);
+    const low = Math.round(kilograms * 1.4);
+    const high = Math.round(kilograms * 2.0);
+    $("supplementWeight").textContent = `${value.toFixed(value % 1 ? 1 : 0)} ${unit}`;
+    $("proteinTarget").textContent = `${target} g/day`;
+    $("proteinRange").textContent = `Practical training range: ${low}–${high} g/day. Your center target is ${target} g/day (1.6 g/kg).`;
+  }
+
+  function renderSearch() {
+    const muscleFilter = $("searchMuscleFilter");
+    const equipmentFilter = $("searchEquipmentFilter");
+    if (!muscleFilter.options.length) {
+      muscleFilter.innerHTML = '<option value="">All body parts</option>' +
+        Object.entries(DATA.muscles).map(([id, item]) => `<option value="${id}">${item.name}</option>`).join("");
+    }
+    if (!equipmentFilter.options.length) {
+      equipmentFilter.innerHTML = '<option value="">All equipment</option>' +
+        DATA.equipment.map(item => `<option value="${item.id}">${item.name}</option>`).join("");
+    }
+
+    const query = $("exerciseSearch").value.trim().toLowerCase();
+    const muscle = muscleFilter.value;
+    const equipment = equipmentFilter.value;
+    const results = DATA.exercises.filter(exercise => {
+      const searchable = [
+        exercise.name,
+        exercise.emphasis,
+        DATA.muscles[exercise.primary]?.name,
+        ...exercise.secondary.map(id => DATA.muscles[id]?.name || id)
+      ].join(" ").toLowerCase();
+      const matchesQuery = !query || searchable.includes(query);
+      const matchesMuscle = !muscle || exercise.primary === muscle || exercise.secondary.includes(muscle);
+      const matchesEquipment = !equipment || exercise.equipment === equipment;
+      return matchesQuery && matchesMuscle && matchesEquipment;
+    }).sort((a, b) => a.name.localeCompare(b.name));
+
+    $("searchResultCount").textContent = `${results.length} exercise${results.length === 1 ? "" : "s"}`;
+    const container = $("searchResults");
+    container.innerHTML = "";
+    if (!results.length) {
+      container.innerHTML = '<p class="empty-state">No exercises match those filters.</p>';
+      return;
+    }
+    results.slice(0, 80).forEach(exercise => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "search-result-card";
+      button.innerHTML = `
+        <strong>${exercise.name}</strong>
+        <span>${DATA.muscles[exercise.primary].name} • ${titleCase(exercise.emphasis)}</span>
+        <small>${equipmentNames([exercise.equipment])}</small>
+      `;
+      button.addEventListener("click", () => openSearchExercise(exercise.id));
+      container.appendChild(button);
+    });
+  }
+
+  function openSearchExercise(exerciseId) {
+    const exercise = exerciseById[exerciseId];
+    if (!exercise) return;
+    $("searchDialogTarget").textContent = `${DATA.muscles[exercise.primary].name} • ${titleCase(exercise.emphasis)}`;
+    $("searchDialogName").textContent = exercise.name;
+    $("searchDialogEquipment").textContent = equipmentNames([exercise.equipment]);
+    $("searchDialogCue").textContent = exercise.cue;
+    $("searchDialogSecondary").textContent = exercise.secondary.length
+      ? exercise.secondary.map(id => DATA.muscles[id].name).join(", ")
+      : "No major assisting group recorded";
+    $("searchDialogVideo").href = `https://www.youtube.com/results?search_query=${encodeURIComponent(exercise.videoQuery)}`;
+    $("searchExerciseDialog").showModal();
   }
 
   function resetApp() {
@@ -1071,18 +1149,21 @@
     }
     document.querySelectorAll(".view").forEach(view => view.classList.toggle("active", view.id === viewId));
     currentView = viewId;
-    const hideBottomNav = ["recommendationView", "workoutView", "summaryView"].includes(viewId);
+    const hideBottomNav = ["recommendationView", "summaryView"].includes(viewId);
     $("bottomNav").hidden = hideBottomNav;
-    document.body.classList.toggle("flow-mode", viewId === "recommendationView" || viewId === "summaryView");
-    document.body.classList.toggle("workout-mode", viewId === "workoutView");
+
+    const navView = viewId === "workoutView" || viewId === "historyView" ? "equipmentView" : viewId;
     document.querySelectorAll(".nav-item").forEach(button => {
-      button.classList.toggle("active", button.dataset.viewTarget === viewId);
+      button.classList.toggle("active", button.dataset.viewTarget === navView);
     });
+
     if (viewId === "equipmentView") renderEquipment();
     if (viewId === "recommendationView") renderRecommendation();
     if (viewId === "workoutView") renderWorkout();
     if (viewId === "summaryView") renderSummary();
     if (viewId === "historyView") renderHistory();
+    if (viewId === "searchView") renderSearch();
+    if (viewId === "supplementsView") renderSupplements();
     if (viewId === "settingsView") renderSettings();
     window.scrollTo({ top: 0, behavior: "auto" });
   }
@@ -1092,12 +1173,16 @@
     renderWorkout();
     renderHistory();
     renderSettings();
+    renderSearch();
+    renderSupplements();
   }
 
   function closeDialogById(id) {
     const dialog = $(id);
     if (dialog?.open) dialog.close();
   }
+
+  let suppressClickUntil = 0;
 
   function installSwipe(element, onLeft, onRight) {
     let startX = 0;
@@ -1110,17 +1195,25 @@
       target = event.target;
     }, { passive: true });
     element.addEventListener("touchend", event => {
-      if (target?.closest("input, textarea, select, button, a, dialog, summary, label")) return;
+      if (target?.closest("input, textarea, select, dialog")) return;
       const touch = event.changedTouches[0];
       const dx = touch.clientX - startX;
       const dy = touch.clientY - startY;
-      if (Math.abs(dx) < 70 || Math.abs(dx) <= Math.abs(dy) * 1.15) return;
+      if (Math.abs(dx) < 55 || Math.abs(dx) <= Math.abs(dy) * 1.05) return;
+      suppressClickUntil = Date.now() + 450;
       if (dx < 0) onLeft?.();
       else onRight?.();
     }, { passive: true });
   }
 
   function bindEvents() {
+    document.addEventListener("click", event => {
+      if (Date.now() < suppressClickUntil) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    }, true);
+
     document.querySelectorAll("[data-view-target]").forEach(button => {
       button.addEventListener("click", () => showView(button.dataset.viewTarget));
     });
@@ -1129,15 +1222,20 @@
     });
 
     $("resumeWorkoutCard").addEventListener("click", () => showView("workoutView"));
-    $("recommendationBackButton").addEventListener("click", () => pendingPlan?.active ? showView("workoutView") : showView("equipmentView"));
-    $("changeEquipmentButton").addEventListener("click", () => pendingPlan?.active ? showView("workoutView") : showView("equipmentView"));
+    $("buildWorkoutButton").addEventListener("click", () => chooseEquipment($("equipmentSelect").value));
+    $("equipmentSelect").addEventListener("change", () => renderHomeRecoveryPreview($("equipmentSelect").value));
+    $("openHistoryButton").addEventListener("click", () => showView("historyView"));
+    $("historyHomeButton").addEventListener("click", () => showView("equipmentView"));
+
+    $("recommendationBackButton").addEventListener("click", () => showView("equipmentView"));
+    $("changeEquipmentButton").addEventListener("click", () => showView("equipmentView"));
     $("startWorkoutButton").addEventListener("click", startPendingWorkout);
     $("forceWorkoutButton").addEventListener("click", () => {
       if (!pendingPlan) return;
       preparePlan(pendingPlan.mode, true);
     });
 
-    $("workoutOverviewButton").addEventListener("click", showCurrentOverview);
+    $("workoutHomeButton").addEventListener("click", goHomeFromWorkout);
     $("workoutNotesButton").addEventListener("click", openNotes);
     $("exerciseNoteButton").addEventListener("click", openNotes);
     $("formTipsButton").addEventListener("click", openTips);
@@ -1149,6 +1247,14 @@
     $("summaryBackButton").addEventListener("click", () => showView("workoutView"));
     $("returnToWorkoutButton").addEventListener("click", () => showView("workoutView"));
     $("finishWorkoutButton").addEventListener("click", finishWorkout);
+
+    $("exerciseSearch").addEventListener("input", renderSearch);
+    $("searchMuscleFilter").addEventListener("change", renderSearch);
+    $("searchEquipmentFilter").addEventListener("change", renderSearch);
+    $("openWeightSettingsButton").addEventListener("click", () => {
+      showView("settingsView");
+      setTimeout(() => $("bodyWeight").focus(), 60);
+    });
 
     $("settingsForm").addEventListener("submit", saveSettings);
     $("exportDataButton").addEventListener("click", exportData);
@@ -1162,11 +1268,14 @@
     $("saveActivePartialButton").addEventListener("click", () => handleActiveWorkoutAction("save"));
     $("discardActiveWorkoutButton").addEventListener("click", () => handleActiveWorkoutAction("discard"));
 
-    installSwipe($("recommendationContent"), startPendingWorkout, () => pendingPlan?.active ? showView("workoutView") : showView("equipmentView"));
-    installSwipe($("workoutSwipeSurface"), () => moveExercise(1), () => moveExercise(-1));
+    installSwipe($("recommendationView"), startPendingWorkout, () => showView("equipmentView"));
+    installSwipe($("workoutView"), () => moveExercise(1), () => moveExercise(-1));
     installSwipe($("summaryView"), null, () => showView("workoutView"));
-    installSwipe($("historyView"), () => showView("settingsView"), null);
-    installSwipe($("settingsView"), null, () => showView("historyView"));
+    installSwipe($("equipmentView"), () => showView("searchView"), null);
+    installSwipe($("searchView"), () => showView("supplementsView"), () => showView("equipmentView"));
+    installSwipe($("supplementsView"), () => showView("settingsView"), () => showView("searchView"));
+    installSwipe($("settingsView"), null, () => showView("supplementsView"));
+    installSwipe($("historyView"), null, () => showView("equipmentView"));
 
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) checkDateChange();
@@ -1179,9 +1288,13 @@
     applyTextSize();
     bindEvents();
     renderAll();
-    if (state.currentWorkout) showView("workoutView");
-    else showView("equipmentView");
+    showView("equipmentView");
     setTimeout(checkDateChange, 50);
+    if ("serviceWorker" in navigator && location.protocol !== "file:") {
+      navigator.serviceWorker.register("service-worker.js").catch(error => {
+        console.warn("Offline cache could not be enabled.", error);
+      });
+    }
   }
 
   initialize();

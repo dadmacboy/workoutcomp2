@@ -3,35 +3,66 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
-  <meta name="theme-color" content="#080c11">
-  <meta name="description" content="A large-text adaptive hypertrophy workout companion for focused muscle-group training.">
+  <meta name="theme-color" content="#0b1b27">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Gym Companion">
+  <meta name="description" content="David's adaptive, equipment-first hypertrophy workout companion.">
   <title>David's Gym Companion</title>
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="style.css">
 </head>
 <body data-text-size="extra">
   <main id="app" class="app-shell">
 
-    <section id="equipmentView" class="view active" aria-labelledby="equipmentTitle">
-      <header class="screen-header">
+    <section id="equipmentView" class="view active standard-view" aria-labelledby="homeTitle">
+      <header class="screen-header compact-header">
         <div>
           <p class="eyebrow">DAVID'S GYM COMPANION</p>
-          <h1 id="equipmentTitle">Choose today's equipment</h1>
+          <h1 id="homeTitle">Home</h1>
+          <p class="header-subtitle">Train what is ready. Rest what is not.</p>
           <p id="todayDate" class="date-line"></p>
         </div>
-        <button class="header-button" data-view-target="settingsView" type="button" aria-label="Open settings">⚙</button>
+        <img class="brand-icon" src="icon-192.png" alt="">
       </header>
 
-      <button id="resumeWorkoutCard" class="resume-card" type="button" hidden>
-        <span>
-          <strong>Resume saved workout</strong>
-          <small id="resumeWorkoutText">Your entries are safely stored.</small>
-        </span>
-        <span aria-hidden="true">›</span>
-      </button>
+      <div class="scroll-content home-content">
+        <button id="resumeWorkoutCard" class="resume-card" type="button" hidden>
+          <span>
+            <strong>Resume workout</strong>
+            <small id="resumeWorkoutText">Your entries are safely stored.</small>
+          </span>
+          <span aria-hidden="true">›</span>
+        </button>
 
-      <p class="lead-copy">Tap the one option you can use right now.</p>
-      <div id="equipmentGrid" class="equipment-grid" aria-label="Available equipment"></div>
-      <p class="privacy-note">Your workout history stays on this device unless you erase browser data.</p>
+        <section class="home-card equipment-picker" aria-label="Equipment selection">
+          <p class="section-kicker">START HERE</p>
+          <label class="select-label equipment-label" for="equipmentSelect">Available equipment</label>
+          <select id="equipmentSelect" class="large-select">
+            <option value="mixed">Mixed equipment</option>
+            <option value="bodyweight">Bodyweight / pull-up bar</option>
+            <option value="trx">TRX</option>
+            <option value="cable">Cable / rope</option>
+            <option value="dumbbell">Dumbbells</option>
+            <option value="machine">Machines</option>
+            <option value="smith">Smith machine</option>
+          </select>
+          <button id="buildWorkoutButton" class="primary-button" type="button">Build today's workout</button>
+        </section>
+
+        <section class="home-card compact-card">
+          <div>
+            <p class="section-kicker">RECOVERY CHECK</p>
+            <h2 id="homeRecoveryTitle">Ready to plan</h2>
+            <p id="homeRecoveryText">Choose the equipment that is available. The app will match it to the most recovered body-part combination.</p>
+          </div>
+        </section>
+
+        <button id="openHistoryButton" class="secondary-button full-button" type="button">Progress &amp; workout history</button>
+        <p class="privacy-note">Your workout history stays on this device unless you erase browser data.</p>
+      </div>
     </section>
 
     <section id="recommendationView" class="view flow-view" aria-labelledby="recommendationTitle">
@@ -50,7 +81,7 @@
           <p id="recommendationMuscles" class="muscle-line">Chest • Shoulders • Triceps</p>
 
           <div class="recommendation-metrics">
-            <div><span>Readiness</span><strong id="recommendationReadiness">100%</strong></div>
+            <div><span>Ready</span><strong id="recommendationReadiness">100%</strong></div>
             <div><span>Time</span><strong id="recommendationTime">45 min</strong></div>
             <div><span>Exercises</span><strong id="recommendationCount">5</strong></div>
           </div>
@@ -63,19 +94,19 @@
           <p id="recommendationReason" class="recommendation-reason"></p>
           <div id="recommendationRecovery" class="recovery-chip-row"></div>
         </article>
-      </div>
 
-      <footer class="flow-footer">
-        <button id="startWorkoutButton" class="primary-button" type="button">Start workout</button>
-        <button id="forceWorkoutButton" class="secondary-button" type="button" hidden>Use least-fatigued option</button>
-        <button id="changeEquipmentButton" class="text-button" type="button">Choose different equipment</button>
-        <p class="gesture-hint">Swipe left to continue • Swipe right to go back</p>
-      </footer>
+        <div class="screen-actions">
+          <button id="startWorkoutButton" class="primary-button" type="button">Start workout</button>
+          <button id="forceWorkoutButton" class="secondary-button" type="button" hidden>Use least-fatigued option</button>
+          <button id="changeEquipmentButton" class="text-button" type="button">Change equipment</button>
+          <p class="gesture-hint">Swipe left to start • Swipe right to go home</p>
+        </div>
+      </div>
     </section>
 
     <section id="workoutView" class="view workout-view" aria-labelledby="workoutScreenTitle">
       <header class="workout-header">
-        <button id="workoutOverviewButton" class="compact-button" type="button">Overview</button>
+        <button id="workoutHomeButton" class="compact-button" type="button">Home</button>
         <div class="workout-header-title">
           <strong id="workoutScreenTitle">Workout</strong>
           <span id="workoutEquipmentLine"></span>
@@ -83,12 +114,13 @@
         <button id="workoutNotesButton" class="compact-button" type="button">Notes</button>
       </header>
 
-      <div class="exercise-progress" aria-label="Workout progress">
+      <div class="exercise-progress swipe-zone" aria-label="Workout progress">
         <div class="progress-copy">
           <strong id="exerciseCounter">Exercise 1 of 5</strong>
           <span id="workoutPercent">0%</span>
         </div>
         <div class="progress-track"><div id="workoutProgressBar" class="progress-bar"></div></div>
+        <small>Swipe left or right anywhere outside an entry box</small>
       </div>
 
       <div id="workoutSwipeSurface" class="workout-scroll">
@@ -118,9 +150,9 @@
       </div>
 
       <footer class="workout-footer">
-        <button id="previousExerciseButton" type="button">‹ Previous</button>
+        <button id="previousExerciseButton" type="button">‹</button>
         <strong id="workoutFooterCounter">1 / 5</strong>
-        <button id="nextExerciseButton" type="button">Next ›</button>
+        <button id="nextExerciseButton" type="button">›</button>
       </footer>
     </section>
 
@@ -140,17 +172,17 @@
           <p id="summaryEquipment"></p>
         </article>
         <div id="summaryExerciseList" class="summary-exercise-list"></div>
+        <div class="screen-actions">
+          <button id="finishWorkoutButton" class="primary-button" type="button">Finish &amp; save workout</button>
+          <button id="returnToWorkoutButton" class="secondary-button" type="button">Return to workout</button>
+          <p class="gesture-hint">Swipe right to review the final exercise</p>
+        </div>
       </div>
-
-      <footer class="flow-footer">
-        <button id="finishWorkoutButton" class="primary-button" type="button">Finish &amp; save workout</button>
-        <button id="returnToWorkoutButton" class="secondary-button" type="button">Return to workout</button>
-        <p class="gesture-hint">Swipe right to review the final exercise</p>
-      </footer>
     </section>
 
     <section id="historyView" class="view standard-view" aria-labelledby="historyTitle">
       <header class="screen-header compact-header">
+        <button id="historyHomeButton" class="back-button" type="button" aria-label="Return home">‹</button>
         <div>
           <p class="eyebrow">YOUR MEMORY</p>
           <h1 id="historyTitle">Progress &amp; history</h1>
@@ -177,6 +209,112 @@
       </div>
     </section>
 
+    <section id="searchView" class="view standard-view" aria-labelledby="searchTitle">
+      <header class="screen-header compact-header">
+        <div>
+          <p class="eyebrow">EXERCISE LIBRARY</p>
+          <h1 id="searchTitle">Search</h1>
+        </div>
+      </header>
+
+      <div class="scroll-content search-content">
+        <label for="exerciseSearch">Exercise or body part</label>
+        <input id="exerciseSearch" class="large-input" type="search" placeholder="Example: triceps or row" autocomplete="off">
+
+        <div class="filter-grid">
+          <label>Body part
+            <select id="searchMuscleFilter"></select>
+          </label>
+          <label>Equipment
+            <select id="searchEquipmentFilter"></select>
+          </label>
+        </div>
+
+        <p id="searchResultCount" class="result-count"></p>
+        <div id="searchResults" class="search-results"></div>
+      </div>
+    </section>
+
+    <section id="supplementsView" class="view standard-view" aria-labelledby="supplementsTitle">
+      <header class="screen-header compact-header">
+        <div>
+          <p class="eyebrow">DAILY TARGETS</p>
+          <h1 id="supplementsTitle">Supplements</h1>
+        </div>
+      </header>
+
+      <div class="scroll-content supplement-content">
+        <section class="supplement-hero">
+          <div class="weight-orb" aria-hidden="true">↗</div>
+          <div class="supplement-hero-copy">
+            <span>Current body weight</span>
+            <strong id="supplementWeight">Not entered</strong>
+            <small>Used only to calculate your protein target</small>
+          </div>
+          <button id="openWeightSettingsButton" class="mini-action" type="button">Update</button>
+        </section>
+
+        <article class="supplement-card supplement-protein primary-target">
+          <div class="supplement-card-head">
+            <span class="supplement-symbol" aria-hidden="true">P</span>
+            <div class="supplement-name">
+              <span>Protein</span>
+              <small>Muscle repair and growth</small>
+            </div>
+            <strong id="proteinTarget">—</strong>
+          </div>
+          <p id="proteinRange">Enter your weight to calculate a daily muscle-building target.</p>
+          <small>Food counts. Protein powder is optional.</small>
+        </article>
+
+        <article class="supplement-card supplement-creatine">
+          <div class="supplement-card-head">
+            <span class="supplement-symbol" aria-hidden="true">Cr</span>
+            <div class="supplement-name">
+              <span>Creatine monohydrate</span>
+              <small>Strength and training support</small>
+            </div>
+            <strong>3–5 g/day</strong>
+          </div>
+          <p>Take consistently. It is not normally calculated by body weight, and a loading phase is optional.</p>
+        </article>
+
+        <article class="supplement-card supplement-magnesium">
+          <div class="supplement-card-head">
+            <span class="supplement-symbol" aria-hidden="true">Mg</span>
+            <div class="supplement-name">
+              <span>Magnesium L-threonate</span>
+              <small>Potential sleep and cognitive support</small>
+            </div>
+            <strong id="magnesiumTarget">1–2 g/day*</strong>
+          </div>
+          <p><strong>Check the compound amount and the elemental magnesium separately.</strong> The large L-threonate number is not the amount of elemental magnesium.</p>
+          <small id="magnesiumNote">*Recent trials used 1–2 g/day of the compound. Keep supplemental elemental magnesium at or below 350 mg/day unless a clinician directs otherwise.</small>
+        </article>
+
+        <article class="supplement-card supplement-omega">
+          <div class="supplement-card-head">
+            <span class="supplement-symbol" aria-hidden="true">Ω3</span>
+            <div class="supplement-name">
+              <span>Omega-3 EPA + DHA</span>
+              <small>General cardiovascular support</small>
+            </div>
+            <strong>250 mg/day</strong>
+          </div>
+          <p>Food first—roughly two servings of fish per week. Ask your clinician before using higher-dose fish oil.</p>
+        </article>
+
+        <details class="evidence-card">
+          <summary>Evidence and safety notes</summary>
+          <p>These are general planning targets, not prescriptions. Supplements can interact with medicines and health conditions.</p>
+          <div class="evidence-links">
+            <a href="https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/" target="_blank" rel="noopener noreferrer">NIH magnesium safety</a>
+            <a href="https://pubmed.ncbi.nlm.nih.gov/39252819/" target="_blank" rel="noopener noreferrer">Magnesium L-threonate sleep trial</a>
+          </div>
+        </details>
+      </div>
+    </section>
+
     <section id="settingsView" class="view standard-view" aria-labelledby="settingsTitle">
       <header class="screen-header compact-header">
         <div>
@@ -186,6 +324,27 @@
       </header>
 
       <form id="settingsForm" class="scroll-content settings-form">
+        <section class="settings-card">
+          <h2>Body profile</h2>
+          <div class="two-field-grid">
+            <label for="bodyWeight">Body weight
+              <input id="bodyWeight" type="number" inputmode="decimal" min="1" step="0.1" placeholder="Enter weight">
+            </label>
+            <label for="weightUnit">Unit
+              <select id="weightUnit">
+                <option value="lb">Pounds</option>
+                <option value="kg">Kilograms</option>
+              </select>
+            </label>
+          </div>
+          <label for="profileSex">Adult profile used for daily magnesium total
+            <select id="profileSex">
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </label>
+        </section>
+
         <section class="settings-card">
           <h2>Readability</h2>
           <label for="textSize">Text size</label>
@@ -218,13 +377,13 @@
 
         <section class="settings-card">
           <h2>Mixed-equipment choices</h2>
-          <p>These are used only when you choose <strong>Mixed equipment</strong>.</p>
+          <p>Used only when you choose <strong>Mixed equipment</strong> on Home.</p>
           <div id="equipmentOptions" class="settings-check-grid"></div>
         </section>
 
         <details class="settings-card settings-details">
           <summary>Adjust recovery hours</summary>
-          <p>Use these as adjustable planning targets. Your body may recover faster or slower.</p>
+          <p>These are planning targets. Soreness, sleep, age, and training effort can change actual recovery.</p>
           <div id="recoverySettings" class="recovery-settings"></div>
         </details>
 
@@ -245,10 +404,22 @@
   </main>
 
   <nav id="bottomNav" class="bottom-nav" aria-label="Main navigation">
-    <button class="nav-item active" data-view-target="equipmentView" type="button"><span>▦</span><strong>Equipment</strong></button>
-    <button id="workoutNavButton" class="nav-item" data-view-target="workoutView" type="button"><span>●</span><strong>Workout</strong></button>
-    <button class="nav-item" data-view-target="historyView" type="button"><span>↗</span><strong>History</strong></button>
-    <button class="nav-item" data-view-target="settingsView" type="button"><span>⚙</span><strong>Settings</strong></button>
+    <button class="nav-item active" data-view-target="equipmentView" type="button">
+      <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.7 12 3l9 7.7v9.1a1.2 1.2 0 0 1-1.2 1.2h-5.1v-6.2H9.3V21H4.2A1.2 1.2 0 0 1 3 19.8z"/></svg>
+      <strong>Home</strong>
+    </button>
+    <button class="nav-item" data-view-target="searchView" type="button">
+      <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"/><path d="m16 16 5 5"/></svg>
+      <strong>Search</strong>
+    </button>
+    <button class="nav-item" data-view-target="supplementsView" type="button">
+      <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.1 4.1a4.4 4.4 0 0 1 6.2 0l5.6 5.6a4.4 4.4 0 0 1-6.2 6.2l-5.6-5.6a4.4 4.4 0 0 1 0-6.2Z"/><path d="m10.8 12.9 4.1-4.1"/></svg>
+      <strong>Supplements</strong>
+    </button>
+    <button class="nav-item" data-view-target="settingsView" type="button">
+      <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6 1.7 1.7 0 0 0 10 3V2.8h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/></svg>
+      <strong>Settings</strong>
+    </button>
   </nav>
 
   <dialog id="formTipsDialog" class="app-dialog">
@@ -261,6 +432,18 @@
       <p><strong>Also works:</strong> <span id="tipsSecondary"></span></p>
       <p><strong>Why today:</strong> <span id="tipsReason"></span></p>
       <button class="secondary-button" data-close-dialog="formTipsDialog" type="button">Close</button>
+    </div>
+  </dialog>
+
+  <dialog id="searchExerciseDialog" class="app-dialog">
+    <div class="dialog-body">
+      <button class="dialog-close" data-close-dialog="searchExerciseDialog" type="button" aria-label="Close">×</button>
+      <p id="searchDialogTarget" class="eyebrow"></p>
+      <h2 id="searchDialogName"></h2>
+      <p><strong>Equipment:</strong> <span id="searchDialogEquipment"></span></p>
+      <p><strong>Form:</strong> <span id="searchDialogCue"></span></p>
+      <p><strong>Also works:</strong> <span id="searchDialogSecondary"></span></p>
+      <a id="searchDialogVideo" class="primary-button link-button" href="#" target="_blank" rel="noopener noreferrer">Watch demonstration</a>
     </div>
   </dialog>
 
@@ -290,8 +473,8 @@
   <dialog id="activeWorkoutDialog" class="app-dialog">
     <div class="dialog-body">
       <button class="dialog-close" data-close-dialog="activeWorkoutDialog" type="button" aria-label="Close">×</button>
-      <p class="eyebrow">WORKOUT ALREADY SAVED</p>
-      <h2>What should happen to it?</h2>
+      <p class="eyebrow">WORKOUT IN PROGRESS</p>
+      <h2>What should happen?</h2>
       <p id="activeWorkoutText"></p>
       <button id="resumeActiveWorkoutButton" class="primary-button" type="button">Resume current workout</button>
       <button id="saveActivePartialButton" class="secondary-button" type="button">Save completed exercises &amp; build new</button>

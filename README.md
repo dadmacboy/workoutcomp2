@@ -1,58 +1,72 @@
-# David's Gym Companion — Large-Text Swipe Prototype v4
+# David's Gym Companion v6.1
 
-This version is designed for an iPhone 12 Pro Max and prioritizes large text, high contrast, large tap targets, and minimal scrolling during workouts.
+A phone-first adaptive hypertrophy workout prototype designed for an iPhone 12 Pro Max with large, high-contrast text and minimal scrolling.
 
 ## Main flow
 
-1. Choose the equipment available right now.
-2. Review the recommended Push, Pull, or Legs + Core combination.
-3. Swipe left or tap Start.
-4. Record one exercise at a time.
-5. Swipe between exercises.
-6. Review and save the workout.
+1. **Home:** choose the equipment currently available from a dropdown.
+2. **Recommendation:** the app selects a Push, Pull, or Legs + Core workout using recovery, recent exercise history, muscle emphasis, and equipment availability.
+3. **Workout:** enter sets, load/setup, and reps one exercise at a time. Swipe left or right, or use the large arrow buttons.
+4. **Finish:** save the session to local workout history.
 
-## Equipment modes
+## Bottom navigation
 
-- Mixed equipment
-- Bodyweight
-- TRX
-- Cable / rope
-- Dumbbells
-- Machines
-- Smith machine
+- **Home** — equipment selection, recovery preview, resume an unfinished workout, and history access.
+- **Search** — browse the exercise library by name, body part, or equipment.
+- **Supplements** — weight-based protein target plus general creatine, magnesium L-threonate, and omega-3 planning information.
+- **Settings** — body weight, units, text size, workout duration, sets, equipment preferences, recovery hours, and backup tools.
 
-A single-equipment workout uses only the selected equipment type. Mixed equipment uses the equipment enabled in Settings.
+## Saving and date changes
 
-## Memory and date behavior
+- Entries save automatically in browser localStorage.
+- Refreshing or closing the page does not erase an active workout.
+- When a new calendar day begins, an unfinished workout is preserved and the app asks whether to continue, save completed exercises and start new, or discard it.
+- Nothing is deleted automatically.
+- Export a backup before clearing Safari data or changing phones.
 
-- Weight, setup, reps, notes, exercise position, and completion status save as they are entered.
-- Closing or refreshing the page does not erase the current workout.
-- On the same day, the app resumes the saved workout.
-- If an unfinished workout crosses into a new calendar day, the app asks whether to continue it, save completed exercises, or discard it.
-- Nothing is deleted automatically because the date changed.
-- Saved data remains in the browser's localStorage. Use Export Backup before clearing browser data or changing devices.
+## Home-screen icon
 
-## Swipe controls
-
-- Recommendation: left to continue, right to go back.
-- Workout: left for the next exercise, right for the previous exercise or overview.
-- Final exercise: left to open the summary.
-- Summary: right to return to the workout.
-- History and Settings: swipe between them.
-
-Swipes are ignored while using inputs, buttons, links, menus, or dialogs.
+The package includes an Apple touch icon and web-app manifest. After publishing on GitHub Pages, open the site in Safari, tap **Share**, then **Add to Home Screen**.
 
 ## Install on GitHub Pages
 
-Replace the existing repository files with:
+Replace these files in the repository root:
 
 - `index.html`
 - `style.css`
 - `exercises.js`
 - `app.js`
+- `apple-touch-icon.png`
+- `icon-192.png`
+- `icon-512.png`
+- `manifest.webmanifest`
+- `service-worker.js`
 
-The README is optional and is not required for the app to run.
+The service worker provides a basic offline cache after the first successful visit.
 
-## Exercise demonstrations
+## Health note
 
-The Video button opens a YouTube search for the selected exercise. This avoids maintaining a large custom image or video library. Review demonstrations critically and stop any movement that causes sharp or worsening pain.
+Recovery and supplement values are planning aids, not medical prescriptions. Adjust training for pain, unusual fatigue, clinician advice, and individual recovery. Supplements may interact with medications or health conditions.
+
+
+## v6 visual refresh
+
+- Softer high-contrast navy and teal design for easier viewing.
+- Larger, clearer bottom-navigation icons.
+- Friendly supplement cards with protein, creatine, magnesium L-threonate, and omega-3 targets.
+- Magnesium L-threonate is shown as a trial range, while clearly separating compound weight from elemental magnesium.
+- Existing v5 workout history and settings remain compatible because the local-storage key is unchanged.
+
+## Supplement evidence notes
+
+The magnesium card distinguishes the weight of the magnesium L-threonate compound from elemental magnesium. Recent randomized trials used 1 g/day or 2 g/day of the compound. The general U.S. tolerable upper limit for magnesium from supplements and medications is 350 mg/day of elemental magnesium for adults unless a clinician advises otherwise.
+
+Sources:
+- NIH Office of Dietary Supplements: https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/
+- 2024 randomized sleep trial: https://pubmed.ncbi.nlm.nih.gov/39252819/
+- Randomized cognition and sleep trial: https://pubmed.ncbi.nlm.nih.gov/41601871/
+
+
+## v6.1 home screen cleanup
+
+Removed the redundant “What equipment can you use?” heading. The Home screen now shows only “Available equipment” above the equipment dropdown.
